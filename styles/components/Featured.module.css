@@ -1,0 +1,44 @@
+ .featuredCard {
+     display: flex;
+     justify-content: center;
+ }
+
+ .featuredCardDetial {
+     display: flex;
+     align-items: center;
+     padding-right: 20px;
+ }
+
+ .featuredCardImage {
+     max-width: 155px;
+     object-fit: contain;
+ }
+
+ .brandCartRankingStar .bi-star-fill {
+     color: gold;
+ }
+
+ .brandCartRankingStar .bi-star {
+     color: #c1c8ce;
+ }
+
+ .brandCartPrice {
+     color: var(--first-color);
+     font-size: 16px;
+ }
+
+ .brandCartRealPrice {
+     color: #9098b1;
+     text-decoration: line-through;
+     font-size: 14px;
+ }
+
+ .brandCartOffPercent {
+     color: var(--secondary-color);
+     font-weight: 600;
+     font-size: 14px;
+ }
+
+ .brandCartFirstOffPercent>span {
+     font-size: 15px;
+ }

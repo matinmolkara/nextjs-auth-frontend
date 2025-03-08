@@ -1,0 +1,42 @@
+  .advertise {
+      background-color: var(--first-color);
+  }
+
+  .advertiseText {
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: end;
+  }
+
+  .advertiseText h1 {
+      color: white;
+  }
+ .advertiseText a {
+     color: white;
+ }
+  .advertiseText p {
+      color: white;
+  }
+  .advertiseText a {
+      border-bottom: 2px solid white;
+  }
+
+  .advertiseImage {
+      display: flex;
+      justify-content: start;
+      margin-top: -70px;
+      margin-right: -20px;
+  }
+
+  .advertiseImage img {
+      width: 580px;
+      height: 438px;
+  }
+
+  @media screen and (max-width: 992px) {
+      .advertiseImage img {
+          width: 380px;
+        height: 238px;
+      }
+  }

@@ -1,0 +1,14 @@
+.logo{
+    padding: 14px 20px;
+}
+.logoImage{
+    width: 44px;
+    height: 44px;
+}
+.logoTitle {
+   padding: 14px 10px;
+   
+}
+.logoTitle a{
+color: var(--text-color);
+}

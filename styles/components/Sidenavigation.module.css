@@ -1,0 +1,191 @@
+/* SIDE NAVBAR */
+.sideNavbar {
+    width: 0;
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--bg-light-color);
+    transition: width 0.5s;
+    box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.2);
+    overflow: auto;
+    display: none;
+    z-index: 3000;
+}
+
+.sideNavbar::-webkit-scrollbar {
+    width: 7px;
+}
+
+.sideNavbar::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+.sideNavbar::-webkit-scrollbar-thumb {
+    background: rgba(191, 192, 192, 1);
+    border-radius: 10px;
+}
+
+.sideNavbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(79, 93, 117, 1);
+}
+
+/* Top section of sidebar */
+.sideNavUp {
+    height: 40px;
+    background-color: var(--forth-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sideNavUp span a {
+    padding: 10px;
+    color: var(--secondary-color);
+}
+
+/* Main navigation items */
+.sideNavbar ul {
+    padding-right: 0;
+}
+
+.sideNavbar ul li.navItem {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    cursor: pointer;
+    margin: 4px;
+    border-radius: 10px;
+    color: var(--forth-color);
+}
+
+.sideNavbar ul li.navItem:hover {
+    color: var(--forth-color);
+    background-color: var(--first-color);
+}
+
+.sideNavbar ul li.navItem .navLink:active {
+    background-color: var(--first-color);
+}
+
+.sideNavbar ul li.navItem.active {
+    background-color: var(--third-color);
+    color: var(--bg-light-color);
+}
+
+/********************************ADD FOR a TAG*********************************************************/
+.sideNavbar ul li.navItem a {
+
+    color: var(--forth-color);
+}
+
+.sideNavbar ul li.navItem:hover a {
+    color: var(--forth-color);
+    background-color: var(--first-color);
+}
+
+
+/********************************ADD FOR a TAG*********************************************************/
+
+
+
+.open {
+    max-width: 300px;
+}
+
+/* Style for submenu */
+.submenu {
+    list-style: none;
+    padding-left: 20px;
+    max-height: 0;
+    /* overflow: hidden; */
+    transition: max-height 0.5s ease-in-out;
+}
+
+.sideNavbar ul li.open .submenu {
+    max-height: 300px;
+}
+
+.sideNavbar ul li .submenu li {
+    padding: 15px;
+    border-bottom: 2px solid var(--bg-light-color);
+}
+
+/* Contact section in sidebar */
+.sideNavContact {
+    padding-top: 10px;
+    border-bottom: 1px solid var(--first-color);
+    width: 90%;
+    margin: 10px auto;
+}
+
+.sideNavContact div {
+    font-size: 14px;
+    text-align: right;
+}
+
+.sideNavContact li div {
+    color: #22262A;
+    padding: 10px;
+}
+
+.sideNavContact li div img {
+    width: 25px;
+    height: 25px;
+}
+
+/* Display sidebar when active */
+.isActive {
+    display: block;
+    width: 280px;
+}
+
+/* Sidenavigation.module.css */
+
+/* استایل کلی برای زیرمنو */
+.submenu {
+    list-style: none;
+    padding-left: 20px;
+    /* فاصله از سمت چپ */
+    margin: 0;
+    display: none;
+    /* مخفی کردن زیرمنو به صورت پیش‌فرض */
+    transition: all 0.3s ease-in-out;
+    /* انیمیشن نمایش */
+    max-height: 300px;
+}
+
+/* زمانی که زیرمنو باز است */
+.submenu.open {
+    display: block;
+    /* نمایش زیرمنو */
+}
+
+/* آیتم‌های زیرمنو */
+.submenu li {
+    margin-bottom: 10px;
+    /* فاصله بین آیتم‌های زیرمنو */
+}
+
+/* آیکون مثبت/منفی */
+.menuItemHeader i {
+    margin-left: 10px;
+    /* فاصله آیکون از متن */
+    cursor: pointer;
+    /* تغییر نشانگر به حالت کلیک */
+    display: flex;
+    justify-content: center;
+}
+
+/* انیمیشن ساده برای منو */
+.submenu li {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.submenu.open li {
+
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}

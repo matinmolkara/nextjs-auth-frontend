@@ -1,0 +1,48 @@
+ .policy00 .navPills .navLink:hover {
+     background-color: transparent;
+     color: var(--first-color);
+ }
+
+ .policy00 .navPills .navItem {
+     margin-left: 7px;
+     margin-right: 7px;
+ }
+
+ .policy00 .navPills .navLink {
+     color: var(--text-color);
+     border: 0;
+     border-radius: 10px;
+     width: 210px;
+     height: 50px;
+ }
+
+ .customNav {
+     color: var(--first-color) !important;
+     border-radius: 0 !important;
+     border-bottom: 3px solid var(--first-color) !important;
+    background-color: transparent !important;
+ }
+
+ .faq {
+     margin-top: 100px;
+     margin-bottom: 100px;
+ }
+
+ 
+
+@media screen and (max-width:992px) {
+.policy00 .nav{
+    padding-left: 2rem;
+
+}
+ .policy00 .navPills .navItem {
+    display: block;
+    margin: auto;
+ }
+ .productInfoProperty ul{
+    margin: 0;
+    padding: 0;
+ }
+ 
+
+}

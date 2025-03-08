@@ -1,0 +1,142 @@
+.inviteContentTable0 > table {
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    margin-top: -10px;
+    /* correct offset on first border spacing if desired */
+}
+
+.inviteTitleTable {
+    display: flex;
+    align-items: center;
+}
+
+.inviteContentTable {
+    padding: 20px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.inviteContentTable0 table>tbody>tr>th {
+    color: var(--text-color);
+    font-weight: 300;
+}
+
+/****************************************************/
+.productDetailShopQuantity {
+    display: flex;
+}
+
+.counter {
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-light-color);
+    height: 30px;
+}
+
+#incrementBtn,
+#decrementBtn {
+    height: 20px;
+    width: 20px;
+
+    border-radius: 0;
+    font-size: 13px;
+    background-color: var(--bg-light-color);
+    border: 0;
+    color: var(--text-light-color);
+    margin: 0;
+}
+
+#counterValue {
+    height: 20px;
+    width: 20px;
+
+    background-color: var(--bg-light-color);
+
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/**************************************************/
+/**************************************************/
+.cartImage {
+    width: 137px;
+    object-fit: contain;
+}
+
+.cartTitle {
+    font-size: 14px;
+    margin-right: 7px;
+}
+p.cartTitle{
+margin-bottom: 0;
+color: var(--first-color);
+}
+/************************************************/
+/************************************************/
+.voucherGroup {
+    display: flex;
+    border: 1px solid var(--bg-light-color);
+    width: 302px;
+    justify-content: space-between;
+}
+
+.voucherGroup button {
+    background-color: var(--first-color);
+    color: white;
+    font-size: 13px;
+    border-radius: 0;
+
+}
+
+.voucherGroup input {
+    border: 0;
+    font-size: 13px;
+}
+
+.voucherGroup input:focus {
+    border: 0;
+    outline: none;
+}
+
+/************************************************/
+/************************************************/
+.payment {
+    width: 300px;
+}
+
+.btnPayment {
+    background-color: var(--first-color);
+    color: white;
+    font-size: 14px;
+    border-radius: 0;
+    width: 100%;
+    padding: 10px 10px;
+}
+
+.cartPayment {
+    font-size: 14px;
+}
+
+.cartPaymentTotal {
+    padding-top: 15px;
+    border-top: 2px solid var(--bg-light-color);
+}
+
+/************************************************/
+.message{
+    font-size: 13px;
+    margin-top: 10px;
+    color: var(--text-light-color);
+}
+/************************************************/
+@media screen and (max-width: 992px) {
+
+.inviteContentTable0>table th,
+    .inviteContentTable0>table td {
+        font-size: 13px;
+    }
+}

@@ -1,0 +1,19 @@
+.hero {
+    background-image: url('../../public/images/hero/background-hero.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 600px;
+}
+
+.heroDetail {
+    height: 600px;
+    display: flex;
+    align-items: center;
+}
+
+.heroDetail h1,
+.heroDetail h2 {
+    color: white;
+    margin-bottom: 25px;
+}

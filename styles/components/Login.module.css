@@ -1,0 +1,118 @@
+.login0 {
+    width: 50%;
+    margin: auto;
+    margin-top: 100px;
+    background: #FFFFFF;
+    box-shadow: 0px 4px 15px rgba(190, 190, 190, 0.25);
+    border-radius: 20px;
+    padding: 40px;
+    height: 100%;
+
+}
+
+.login0 h3 {
+    color: var(--first-color);
+    margin-top: 15px;
+
+}
+
+.login0 input.formControl {
+    background: #F3F3F3;
+    border-radius: 0px;
+    border: none;
+    padding: 12px;
+    font-size: 14px;
+}
+
+.login0 input.formControl::placeholder {
+    color: #888888;
+}
+
+.login0 .formLabel {
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+.login0 button {
+
+    width: 170px;
+}
+
+.login0 button.btnPrimary {
+    background-color: var(--first-color);
+border: 0;
+border-radius: 0;
+box-shadow: 0px 10px 30px rgba(64, 191, 255, 0.24);
+}
+
+.login0 button.btnSecondary {
+    background-color: var(--third-color);
+    border: 0;
+    border-radius: 0;
+    color: white;
+    font-size: 14px;
+}
+
+
+a.registerLink{
+    color: var(--secondary-color);
+}
+.login0 .forgotLink{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.login0 .forgotLink a{
+    font-size: 13px;
+    color: var(--forth-color);
+    
+}
+
+
+.login0 .verifyNumber {
+    display: flex;
+}
+
+.login0 .verifyNumber input {
+
+    border-radius: 10px;
+
+}
+
+.login0 .verifyNumber input:first-child {
+    width: 20%;
+
+}
+
+.login0 .verifyNumber input#inputNumber2 {
+    width: 50%;
+    margin: 0 30px;
+}
+
+.login0 .verifyNumber input#inputNumber3 {
+    width: 79%;
+    margin: 0 0px 0px 30px;
+}
+
+.login0 .verifyNumber > button {
+    width: 30%;
+    background-color: var(--third-color);
+    color: white;
+    border-radius: 0px;
+    font-size: 14px;
+
+}
+@media screen and (max-width:992px) {
+ .login0 {
+     width: 97%;
+     margin: auto;
+     padding: 10px;
+     font-size: 14px;
+ }
+
+ .login0 button {
+     font-size: 14px;
+     width: 135px;
+ }
+}
+
+

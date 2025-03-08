@@ -1,0 +1,43 @@
+   .services {
+       margin-top: 100px;
+   }
+
+   .servicesCard {
+       width: 100%;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+
+   }
+   .servicesCardDetail p {
+    display: inline-block;
+    text-align: center;
+    word-wrap: break-word;
+    /* Break long lines gracefully */
+    max-width: 200px;
+    /* Set desired width for wrapping */
+    line-height: 1.6;
+    /* Add spacing between lines */
+}
+   .servicesCardDetail h4,  .servicesCardDetail p {
+       text-align: center;
+       margin-top: 15px;
+   }
+
+   .servicesCardDetailImage {
+       display: flex;
+       justify-content: center;
+       align-items: center;
+   }
+
+   .servicesCardDetailImage img {
+    
+       max-width: 100px;
+       object-fit: contain;
+       margin: auto;
+
+   }
+
+   .servicesCardDetail p {
+       color: var(--text-color);
+   }

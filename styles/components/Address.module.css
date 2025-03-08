@@ -1,0 +1,105 @@
+
+
+.inviteTitleTable {
+    display: flex;
+    align-items: center;
+}
+
+.inviteContentTable {
+    padding: 20px;
+
+    margin-bottom: 40px;
+}
+
+.inviteContentTable0 table>tbody>tr>th {
+    color: var(--text-color);
+    font-weight: 300;
+}
+
+
+
+/**************************************************/
+/**************************************************/
+.cartImage {
+    width: 137px;
+    object-fit: contain;
+}
+
+.cartTitle {
+    font-size: 14px;
+    margin-right: 7px;
+}
+
+
+/************************************************/
+/************************************************/
+.payment {
+    width: 300px;
+}
+
+.btnPayment {
+    background-color: var(--first-color);
+    color: white;
+    font-size: 14px;
+    border-radius: 0;
+    width: 100%;
+    padding: 10px 10px;
+}
+
+.cartPayment {
+    font-size: 14px;
+}
+
+.cartPaymentTotal {
+    padding-top: 15px;
+    border-top: 2px solid var(--bg-light-color);
+}
+
+/************************************************/
+/************************************************/
+.modal .btn {
+    border-radius: 0;
+    font-size: 14px;
+}
+
+.modal .btn.btnSave {
+    background-color: var(--first-color);
+    color: white;
+}
+
+.modal .btn.btnCloseCustom {
+    border-radius: 0;
+    background-color: var(--bg-light-color);
+}
+
+.modal input,
+.modal select,
+.modal label {
+    font-size: 13px;
+}
+
+/************************************************/
+/************************************************/
+@media screen and (max-width: 992px) {
+
+    .inviteContentTable0>table  th,
+    .inviteContentTable0>table td {
+        font-size: 13px;
+    }
+}
+
+.eventTable {
+    border-collapse: separate;
+        border-spacing: 0 10px;
+        margin-top: -10px;
+    background-color: var(--bg-light-color);
+}
+
+.eventTable p {
+    color: var(--text-color);
+    padding: 20px;
+}
+
+.eventTable p i {
+    color: var(--secondary-color);
+}

@@ -1,0 +1,129 @@
+  /*******************************************/
+  /*******************************************/
+  .brandCart {
+      width: 301px;
+      height: 388px;
+      background-color: #f6f6f6;
+      /* border: 1px solid red; */
+      position: relative;
+      margin-bottom: 50px;
+  }
+
+  /* .brandCart:hover {
+    -webkit-box-shadow: 5px 10px 14px -11px rgba(195, 204, 227, 1);
+    -moz-box-shadow: 5px 10px 14px -11px rgba(195, 204, 227, 1);
+    box-shadow: 5px 10px 14px -11px rgba(195, 204, 227, 1);
+  } */
+  .brandCartDetail {
+      height: 130px;
+      margin-top: -10px;
+      background-color: white;
+      padding: 10px;
+      text-align: center;
+      /* border: 1px solid red; */
+  }
+
+  .brandCart img {
+      width: 100%;
+
+      object-fit: contain;
+      /* border: 1px solid red;
+     height: 240px; */
+  }
+
+  .brandCartOverlay {
+      width: 280px;
+      margin: auto;
+      opacity: 0;
+      visibility: hidden;
+      height: 200px;
+      background-color: white;
+      position: absolute;
+      top: 35px;
+      left: 0;
+      right: 0;
+
+      transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .brandCart:hover .brandCartOverlay {
+      opacity: 0.8;
+      visibility: visible;
+  }
+
+  .brandCartFirstTitle h4 {
+      color: var(--text-color);
+      padding-top: 7px;
+  }
+
+  .brandCartPrice {
+      color: var(--first-color);
+      font-size: 16px;
+  }
+
+  .brandCartRealPrice {
+      color: #9098b1;
+      text-decoration: line-through;
+      font-size: 14px;
+  }
+
+  .brandCartOffPercent {
+      color: var(--secondary-color);
+      font-weight: 600;
+      font-size: 14px;
+  }
+
+  .brandCartFirstOffPercent>span {
+      font-size: 15px;
+  }
+
+  .brandCartRankingStar .bi-star-fill {
+      color: gold;
+  }
+
+  .brandCartRankingStar .bi-star {
+      color: #c1c8ce;
+  }
+
+  .brandCartOffSign {
+      background-color: var(--secondary-color);
+      color: white;
+      width: 100px;
+      height: 33px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      font-weight: 300;
+      text-align: center;
+  }
+
+  .brandCartOverlayIcons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .brandCartOverlayIcons a {
+      font-size: 18px;
+      font-weight: bold;
+      border: 1px solid #9098b1;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+      color: #33a0ff;
+  }
+
+  h5.more a {
+      border-bottom: 1px solid var(--first-color);
+      padding-bottom: 7px;
+      color: var(--first-color);
+  }

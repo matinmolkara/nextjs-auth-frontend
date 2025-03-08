@@ -1,0 +1,174 @@
+
+.footer {
+    margin-top: 200px;
+    width: 100%;
+    min-height: 418px;
+    background-color: var(--third-color);
+    position: relative;
+}
+
+.footer0 {
+
+
+    position: relative;
+
+
+}
+
+.footer00 {
+    position: absolute;
+    top: -71px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 70%;
+
+
+    height: 142px;
+
+    padding: 17px 32px;
+    border-radius: 15px;
+    background-color: var(--main-color);
+
+}
+
+.footer0001 h4 {
+    font-weight: 400;
+    width: 60%;
+}
+
+.footer0001 h5 {
+    font-weight: 300;
+}
+
+.footer000 {
+    display: flex;
+    align-items: center;
+}
+
+.footer0001 {
+    margin-left: 10px;
+}
+
+.footer001 {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.footer001>.input-group {
+    border: 0;
+    outline: none;
+    background-color: white;
+    border-radius: 10px;
+}
+
+.footer001>.input-group>input {
+    border: 0;
+    outline: none;
+
+}
+
+.footer001>.input-group>input:focus {
+    border: 0;
+    outline: none;
+    box-shadow: none;
+}
+
+.footer001>.input-group>button {
+    background-color: var(--primary-light-color);
+    color: var(--main-color);
+    margin: 5px;
+    border-radius: 7px !important;
+    padding-left: 15px;
+    font-size: 15x;
+    font-weight: 400;
+}
+
+.footer01>h4>img {
+    width: 190px;
+    display: block;
+    margin: auto;
+}
+
+.footer01 h4 {
+    color: var(--main-color);
+}
+
+.footer01 p {
+    color: var(--text-color);
+    font-size: 15px;
+    padding-bottom: 20px;
+    text-align: justify;
+}
+
+.footer01 ul,
+.footer01 ul li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    padding-top: 5px;
+}
+
+.footer01 ul li a {
+    font-size: 15px;
+    color: var(--text-color);
+    font-weight: var(--font-weight-light);
+
+}
+
+.footer010 {
+    display: flex;
+    border-top: 1px solid #c7c7c7;
+    padding-top: 30px;
+    margin-right: 50px;
+}
+
+.footer010 a {
+    margin-left: 7px;
+}
+
+.footer1 {
+
+    padding-top: 40px;
+}
+
+.footer2 {
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    margin: auto;
+    border-top: 1px solid #c7c7c7;
+    padding-top: 10px;
+    width: 83%;
+}
+
+.footer2 p {
+    text-align: center;
+    color: var(--main-color);
+
+}
+
+.footer010 h4 {
+    color: var(--main-color);
+}
+.footer010 {
+    justify-content: center;
+    margin: auto;
+}
+
+.footer010 h4 {
+    padding-top: 5px;
+    margin-left: 10px;
+}
+
+.footer0101 a img{
+    width: 25px;
+    height: 25px;
+}
+ @media screen and (max-width:992px) {
+    .footer0{
+        padding-bottom: 100px;
+    }
+ }
