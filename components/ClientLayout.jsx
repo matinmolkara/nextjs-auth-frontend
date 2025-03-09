@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { ProductProvider } from "@/context/ProductContext";
 
+
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
   const noLayoutRoutes = [
@@ -22,11 +23,13 @@ export default function ClientLayout({ children }) {
 
   return (
     <>
-      <ProductProvider>
-        <SidebarMenu />
-        <Header />
-        {children}
-      </ProductProvider>
+      
+        <ProductProvider>
+          <SidebarMenu />
+          <Header />
+          {children}
+        </ProductProvider>
+     
       <Footer />
     </>
   );

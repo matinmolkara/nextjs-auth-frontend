@@ -1,12 +1,22 @@
-import React from 'react'
-import styles from '../../../styles/components/Login.module.css'
-import LoginHeader from '@/components/login/LoginHeader';
+"use client";
+import { useState } from "react";
+import { useAuth } from "@/context/authContext";
+import styles from "../../../styles/components/Login.module.css";
+import LoginHeader from "@/components/login/LoginHeader";
 import Link from "next/link";
-import LoginFrame from '@/components/login/LoginFrame';
+import LoginFrame from "@/components/login/LoginFrame";
 const Login = () => {
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   return (
     <LoginFrame>
-      <form className="row g-3">
+      <form className="row g-3"
+        onSubmit={async (e) => {
+          e.preventDefault();
+          await login(email, password);
+        }}
+      >
         <LoginHeader title="ورود به سایت" />
         <div className="col-12 mb-3">
           <label
@@ -17,6 +27,8 @@ const Login = () => {
           </label>
           <input
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className={`form-control ${styles.formControl}`}
             id="inputEmail4"
             placeholder="شماره موبایل خود را وارد کنید"
@@ -31,6 +43,8 @@ const Login = () => {
           </label>
           <input
             type="password"
+            value={password}
+          onChange={(e) => setPassword(e.target.value)}
             className={`form-control ${styles.formControl}`}
             id="inputPassword4"
             placeholder="رمز عبور را وارد کنید"
@@ -59,8 +73,9 @@ const Login = () => {
           </div>
         </div>
       </form>
+      
     </LoginFrame>
   );
-}
+};
 
-export default Login
+export default Login;
