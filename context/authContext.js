@@ -1,12 +1,12 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
-
+import { useRouter } from "next/navigation"; 
 const AuthContext = createContext(undefined);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-
+ const router = useRouter();
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
     if (data.user) {
       Cookies.set("token", data.token, { expires: 7 });
       setUser(data.user);
-      console.log(user);
+     router.push("/profile");
     } else {
       // مدیریت خطا در صورت عدم وجود کاربر
       console.error("Login failed:", data.message);
