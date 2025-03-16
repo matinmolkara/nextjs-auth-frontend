@@ -20,7 +20,7 @@ const BrandList = () => {
               className="form-check-label"
               htmlFor={`flexCheckDefault${index}`}
             >
-              {brand}
+              {brand.name}
             </label>
           </div>
         </li>

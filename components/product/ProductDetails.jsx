@@ -1,11 +1,11 @@
 import React from 'react'
 import styles from "../../styles/components/ProductGrid.module.css";
 import Link from 'next/link';
-const ProductDetails = ({comments}) => {
+const ProductDetails = ({comments,product}) => {
   return (
     <div>
       <div className="product-detail-shop">
-        <h4>کفش نایک مدل AIR Jordan مردانه</h4>
+        <h4>{product.title}</h4>
         <div className="product-detail-shop-reviews">
           <span>
             <Link href="#"> ثبت نظر </Link>

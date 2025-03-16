@@ -6,7 +6,7 @@ const ColorPicker = ({ colors = [], onColorSelect }) => {
  const handleColorSelect = (color) => {
    setSelectedColor(color);
    if (onColorSelect) {
-     onColorSelect(color); // ارسال رنگ انتخاب‌شده به والد
+     onColorSelect({ name: color.name, code: color.code }); // ارسال رنگ انتخاب‌شده به والد
    }
  };
   return (

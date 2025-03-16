@@ -1,68 +1,110 @@
 // context/ProductContext.js
 "use client";
 import { useRouter } from "next/router";
-import React, { createContext, useState } from "react";
-
+import { usePathname } from "next/navigation";
+import React, { createContext, useState, useEffect } from "react";
+import {
+  getProducts,
+  getBrands,
+  getCategories,
+  getColors,
+  getSizes,
+  getProductColors,
+  getProductSizes,
+} from "../app/api/api"; // ایجاد api.js
 // ایجاد context
 export const ProductContext = createContext();
 
 // کامپوننت provider
 export const ProductProvider = ({ children }) => {
+  const [products, setProducts] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [sizes, setSizes] = useState([]);
   const [cartProducts, setCartProducts] = useState([]);
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      imgSrc: "/images/hero/bestoffer3.png",
-      title: "کفش فوتسال مردانه تن زیب مدل TID9602",
-      price: "1386000",
-      realPrice: "1800000",
-      discount: "24%",
-      specialOffer: true,
-    },
-    {
-      id: 2,
-      imgSrc: "/images/brands/1.png",
-      title: "کفش فوتسال مردانه تن زیب مدل TID9602",
-      price: "1386000",
-      realPrice: "1800000",
-      discount: "24%",
-      specialOffer: false,
-    },
-    {
-      id: 3,
-      imgSrc: "/images/brands/2.png",
-      title: "کفش فوتسال مردانه تن زیب مدل TID9602",
-      price: "1386000",
-      realPrice: "1800000",
-      discount: "24%",
-      specialOffer: true,
-    },
-  ]);
-  const productColors = [
-    { name: "آبی", code: "#006cff" },
-    { name: "قرمز", code: "#fc3e39" },
-    { name: "مشکی", code: "#171717" },
-    { name: "زرد", code: "#fff600" },
-    { name: "صورتی", code: "#ff00b4" },
-  ];
-  const shoeSizes = [
-    { size: "36", available: true },
-    { size: "37", available: false },
-    { size: "38", available: true },
-    { size: "39", available: true },
-  ];
+ const [productImages, setProductImages] = useState([]);
+const [productColors, setProductColors] = useState([]);
+const [productSizes, setProductSizes] = useState([]);
 
-  const shirtSizes = [
-    { size: "S", available: true },
-    { size: "M", available: true },
-    { size: "L", available: false },
-    { size: "XL", available: true },
-    { size: "XXL", available: false },
-  ];
+useEffect(() => {
+  async function fetchData() {
+    const productsData = await getProducts();
+    setProducts(productsData);
+    setFilteredProducts(productsData); // مقداردهی اولیه فیلتر
+    const brandsData = await getBrands();
+    setBrands(brandsData);
+    const categoriesData = await getCategories();
+    setCategories(categoriesData);
+    const colorsData = await getColors();
+    setColors(colorsData);
+    const sizesData = await getSizes();
+    setSizes(sizesData);
+  }
+  fetchData();
+}, []);
+ const pathname = usePathname();
+useEffect(() => {
+  // ✅ مقدار pathname را اینجا بگیر
+  const pathParts = pathname.split("/");
+  const productId = pathParts[pathParts.length - 1];
+
+  console.log(`📦 دریافت رنگ‌های محصول برای ID: ${productId}`);
+
+  if (!productId || isNaN(Number(productId))) return; // جلوگیری از ارسال درخواست نامعتبر
+
+  async function fetchColors() {
+    try {
+      const productColorsData = await getProductColors(productId);
+      console.log(
+        `🎨 رنگ‌های دریافت‌شده برای محصول ${productId}:`,
+        productColorsData
+      );
+      setProductColors(productColorsData);
+    } catch (error) {
+      console.error("❌ خطا در دریافت رنگ‌های محصول:", error);
+    }
+  }
+
+  fetchColors();
+}, [pathname]);
+
+
+useEffect(() => {
+  // ✅ مقدار pathname را اینجا بگیر
+  const pathParts = pathname.split("/");
+  const productId = pathParts[pathParts.length - 1];
+
+  console.log(`📦 دریافت سایزهای محصول برای ID: ${productId}`);
+
+  if (!productId || isNaN(Number(productId))) return; // جلوگیری از ارسال درخواست نامعتبر
+
+  async function fetchSizes() {
+    try {
+      const productSizesData = await getProductSizes(productId);
+      console.log(
+        `🎨 سایزهای دریافت‌شده برای محصول ${productId}:`,
+        productSizesData
+      );
+      setProductSizes(productSizesData);
+    } catch (error) {
+      console.error("❌ خطا در دریافت سایزهای محصول:", error);
+    }
+  }
+
+  fetchSizes();
+}, [pathname]);
+
+
+
+
+
+
   // پیدا کردن محصول انتخاب‌شده بر اساس شناسه
-  const getProductById = (id) => {
-    return products.find((product) => product.id === parseInt(id, 10));
-  };
+const getProductById = (id) => {
+  if (!products.length) return null;
+  return products.find((product) => product.id === parseInt(id, 10)) || null;
+};
 
   const [filteredProducts, setFilteredProducts] = useState(products);
 
@@ -77,14 +119,7 @@ export const ProductProvider = ({ children }) => {
     }
     setFilteredProducts(sortedProducts);
   };
-  const [brands, setBrands] = useState([
-    "نایک",
-    "پوما",
-    "آدیداس",
-    "اسکیچرز",
-    "نیوبالانس",
-    "ریباک",
-  ]);
+  
   const [comments, setComments] = useState([
     {
       user: "زهرا ملک آرا",
@@ -102,12 +137,8 @@ export const ProductProvider = ({ children }) => {
     },
   ]);
 
-  const [productImages, setProductImages] = useState([
-    "/images/brands/1.png",
-    "/images/brands/2.png",
-    "/images/brands/3.png",
-    "/images/brands/4.png",
-  ]);
+
+
 
   const [relatedProducts, setRelatedProducts] = useState([
     {
@@ -288,9 +319,9 @@ export const ProductProvider = ({ children }) => {
         setComments,
         brands,
         setBrands,
-        productColors,
-        shoeSizes,
-        shirtSizes,
+        categories,
+        sizes,
+        colors,
         addresses,
         setAddressess,
         provinces,
@@ -302,6 +333,10 @@ export const ProductProvider = ({ children }) => {
         setSelectedAddress,
         isEditMode,
         setIsEditMode,
+        productColors,
+        setProductColors,
+        productSizes,
+        setProductSizes,
       }}
     >
       {children}

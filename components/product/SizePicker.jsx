@@ -1,17 +1,16 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 
 const SizePicker = ({ sizes = [], onSizeSelect }) => {
+  const [selectedSize, setSelectedSize] = useState("");
+  const handleSizeChange = (event) => {
+    const size = event.target.value;
+    setSelectedSize(size);
+    if (onSizeSelect) {
+      onSizeSelect(size); // ارسال سایز انتخاب‌شده به والد
+    }
+  };
 
-     const [selectedSize, setSelectedSize] = useState("");
-    const handleSizeChange = (event) => {
-      const size = event.target.value;
-      setSelectedSize(size);
-      if (onSizeSelect) {
-        onSizeSelect(size); // ارسال سایز انتخاب‌شده به والد
-      }
-    };
-  
   return (
     <div className="category-filter-section-1">
       <select
@@ -23,13 +22,9 @@ const SizePicker = ({ sizes = [], onSizeSelect }) => {
         <option value="" disabled>
           انتخاب کنید
         </option>
-        {sizes.map((item, index) => (
-          <option
-            key={index}
-            value={item.size}
-            disabled={!item.available} // غیرفعال کردن سایز ناموجود
-          >
-            {item.size} {!item.available ? "(ناموجود)" : ""}
+        {sizes.map((item) => (
+          <option key={item.id} value={item.size}>
+            {item.size}
           </option>
         ))}
       </select>
@@ -37,4 +32,4 @@ const SizePicker = ({ sizes = [], onSizeSelect }) => {
   );
 };
 
-export default SizePicker
+export default SizePicker;

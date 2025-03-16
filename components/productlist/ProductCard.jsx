@@ -1,12 +1,15 @@
 "use client";
-import React, { useContext } from "react";
-import { ProductContext } from "@/context/ProductContext";
+import React from "react";
 import Image from "next/image";
 import styles from "../../styles/components/ProductGrid.module.css";
 import "../../styles/product.css";
 import Link from "next/link";
+
 const ProductCard = ({ product }) => {
-  const { id, imgSrc, title, price, realPrice, discount, specialOffer } =
+  if (!product) {
+    return <div>محصول یافت نشد.</div>;
+  }
+  const { id, title, price, real_price, discount, special_offer, image_urls } =
     product;
 
   return (
@@ -23,12 +26,14 @@ const ProductCard = ({ product }) => {
               </Link>
             </div>
           </div>
-          {specialOffer && (
+          {special_offer && (
             <div className={styles.brandCartOffSign}>
               <span>فروش ویژه</span>
             </div>
           )}
-          <Image src={imgSrc} alt={title} width={301} height={261} />
+          {image_urls && image_urls.length > 0 && (
+            <Image src={image_urls[0]} alt={title} width={301} height={261} />
+          )}
           <div className={styles.brandCartDetail}>
             <div className={styles.brandCartFirstTitle}>
               <h4 className={styles.brandCartTitle}>{title}</h4>
@@ -42,8 +47,8 @@ const ProductCard = ({ product }) => {
             </div>
             <div className={styles.brandCartFirstOffPercent}>
               <span className={styles.brandCartPrice}>{price}</span>
-              {realPrice && (
-                <span className={styles.brandCartRealPrice}>{realPrice}</span>
+              {real_price && (
+                <span className={styles.brandCartRealPrice}>{real_price}</span>
               )}
               {discount && (
                 <span className={styles.brandCartOffPercent}>{discount}</span>

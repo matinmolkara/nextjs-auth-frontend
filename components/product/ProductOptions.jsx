@@ -3,9 +3,9 @@ import React, { useState ,useContext} from "react";
 import { ProductContext } from "@/context/ProductContext";
 import ColorPicker from './ColorPicker';
 import SizePicker from "./SizePicker";
-const ProductOptions = ({ onColorSelect, onSizeSelect }) => {
-  const { productColors, shirtSizes, shoeSizes } = useContext(ProductContext);
-  
+const ProductOptions = ({ productId, onColorSelect, onSizeSelect }) => {
+  const { productSizes, productColors } = useContext(ProductContext);
+
   const handleColorChange = (color) => {
     onColorSelect(color);
     console.log("رنگ انتخاب‌شده:", color);
@@ -15,6 +15,12 @@ const ProductOptions = ({ onColorSelect, onSizeSelect }) => {
     console.log("سایز انتخاب‌شده:", size);
   };
 
+  // console.log("تمام رنگ‌های محصولات:", productColors);
+  // console.log("Product ID در ProductOptions:", productId);
+  // فیلتر کردن رنگ‌های مرتبط با محصول
+//   const filteredColors =
+//     productColors?.filter((pc) => pc.id === Number(productId)) || [];
+// console.log("رنگ‌های مرتبط با محصول:", filteredColors);
   return (
     <div>
       <div className="product-detail-shop">
@@ -37,9 +43,8 @@ const ProductOptions = ({ onColorSelect, onSizeSelect }) => {
               <span> انتخاب سایز: </span>
               <span>
                 {/* <p>سایز انتخاب‌شده: {selectedSize || "هنوز انتخاب نشده"}</p> */}
-                <SizePicker sizes={shoeSizes} onSizeSelect={handleSizeChange} />
                 <SizePicker
-                  sizes={shirtSizes}
+                  sizes={productSizes}
                   onSizeSelect={handleSizeChange}
                 />
               </span>
