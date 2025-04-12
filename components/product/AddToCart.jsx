@@ -35,10 +35,10 @@ const AddToCart = ({ product, selectedColor, selectedSize }) => {
       console.error("محصول تعریف نشده است!");
       return;
     }
-    if (!selectedColor || !selectedSize) {
-      console.error("لطفاً سایز و رنگ را انتخاب کنید!");
-      return;
-    }
+    // if (!selectedColor || !selectedSize) {
+    //   console.error("لطفاً سایز و رنگ را انتخاب کنید!");
+    //   return;
+    // }
       
       setAddedToCart(true); // وضعیت افزودن به سبد خرید را تغییر می‌دهد
       setCartModalVisible(true); // مدال را نمایش می‌دهد

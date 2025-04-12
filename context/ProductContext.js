@@ -1,6 +1,6 @@
 // context/ProductContext.js
 "use client";
-import { useRouter } from "next/router";
+
 import { usePathname } from "next/navigation";
 import React, { createContext, useState, useEffect } from "react";
 import {

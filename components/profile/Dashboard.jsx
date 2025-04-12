@@ -3,45 +3,40 @@ import React from 'react'
 import Link from 'next/link';
 import { usePathname } from "next/navigation";
 import styles from '../../styles/components/Dashboard.module.css'
-import {
-  ChevronLeft,
-  ShoppingCart,
-  LogOut,
-  User,
-  MapPin,
-  Package,
-  LayoutDashboard,
-  
-} from "lucide-react";
+
 const Dashboard = () => {
   const currentPath = usePathname();
     const links = [
       {
         href: "/profile",
         label: "داشبورد",
-        icon: <LayoutDashboard className="icon-color w-5 h-5" />,
+        icon: <i className="bi bi-columns-gap"></i>,
       },
       {
         href: "/profile/orders",
         label: "سفارشات",
-        icon: <Package className="icon-color w-5 h-5" />,
+        icon: <i className="bi bi-box-seam"></i>,
       },
       {
         href: "/profile/addresses",
         label: "آدرس‌ها",
-        icon: <MapPin className="icon-color w-5 h-5" />,
+        icon: <i className="bi bi-geo-alt"></i>,
       },
       {
         href: "/profile/userinfo",
         label: "اطلاعات کاربری",
-        icon: <User className="icon-color w-5 h-5" />,
+        icon: <i className="bi bi-person"></i>,
       },
       {
         href: "/profile/shoppingcart",
         label: "سبد خرید",
-        icon: <ShoppingCart className="icon-color w-5 h-5" />,
+        icon: <i className="bi bi-bag-check"></i>,
       },
-      { href: "/exit", label: "خروج", icon: <LogOut className="icon-color w-5 h-5" /> },
+      {
+        href: "/exit",
+        label: "خروج",
+        icon: <i className="bi bi-box-arrow-right"></i>,
+      },
     ];
   return (
     <div className={`${styles.holder} d-flex flex-column gap-2 w-100 mx-auto"`}>
@@ -59,7 +54,9 @@ const Dashboard = () => {
             {link.icon}
             {link.label}
           </span>
-          <ChevronLeft className={`${styles.chevronIcon}icon-color w-5 h-5`} />
+          <i
+            className={`${styles.chevronIcon}icon-color bi bi-chevron-left`}
+          ></i>
         </Link>
       ))}
     </div>
