@@ -1,6 +1,7 @@
 "use client"
-import React, {useContext} from 'react'
-import { ProductContext } from "@/context/ProductContext";
+import React from 'react';
+import { useAuth } from "@/context/authContext";
+import { useCartContext } from "@/context/cartContext";
 import styles from '../styles/components/Header.module.css'
 import Image from 'next/image';
 import Searchz from '../public/images/icon/searchz.png'
@@ -8,7 +9,8 @@ import Link from 'next/link';
 import Logo from './Logo';
 import Navbar from './Navbar';
 const Header = () => {
-   const { cartProducts } = useContext(ProductContext);
+    const { cartItems } = useCartContext();
+      const { user,logout } = useAuth(); 
   return (
     <div>
       <div className="container" id="header">
@@ -17,12 +19,26 @@ const Header = () => {
             <div className="d-flex">
               <div className={styles.login}>
                 <i className="bi bi-person"></i>
-                <Link href="/users/login"> ورود به پنل کاربری </Link>
+                {user ? (
+                  <form
+                    className="d-flex"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      await logout();
+                    }}
+                  >
+                    <Link href="/profile/userinfo">{user.name || user.email}</Link>
+
+                    <button>خروج</button>
+                  </form>
+                ) : (
+                  <Link href="/users/login">ورود به پنل کاربری</Link>
+                )}
               </div>
               <div className={styles.cart}>
                 <Link href="/checkout/cart">
                   <i className="bi bi-cart">
-                    <span className="">{cartProducts.length} </span>
+                    <span className="">{cartItems?.length || 0}</span>
                   </i>
                 </Link>
               </div>

@@ -1,11 +1,15 @@
-"use client"; // این کامپوننت باید کلاینتی باشد
+// app/layout.js
+"use client";
 
 import { usePathname } from "next/navigation";
 import SidebarMenu from "@/components/SidebarMenu";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { ProductProvider } from "@/context/ProductContext";
-
+import { CartProvider } from "@/context/cartContext";
+import { AuthProvider } from "@/context/authContext";
+import { useEffect } from "react";
+import FetchCartOnAuth from "@/components/FetchCartOnAuth";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
@@ -17,20 +21,23 @@ export default function ClientLayout({ children }) {
     "/users/checkmail",
   ]; // مسیرهایی که نباید لایوت داشته باشند
 
-  if (noLayoutRoutes.includes(pathname)) {
-    return <>{children}</>; // حذف هدر، فوتر و سایدبار برای صفحات خاص
-  }
-
   return (
-    <>
-      
+    <AuthProvider>
+      <CartProvider>
         <ProductProvider>
-          <SidebarMenu />
-          <Header />
-          {children}
+          {noLayoutRoutes.includes(pathname) ? (
+            <>{children}</> // حذف هدر، فوتر و سایدبار برای صفحات خاص
+          ) : (
+            <>
+              <SidebarMenu />
+              <Header />
+              {children}
+              <Footer />
+            </>
+          )}
+          <FetchCartOnAuth /> {/* فراخوانی fetchCart در کامپوننت فرزند */}
         </ProductProvider>
-     
-      <Footer />
-    </>
+      </CartProvider>
+    </AuthProvider>
   );
 }

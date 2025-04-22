@@ -1,17 +1,22 @@
 "use client";
-import React, { useContext } from "react";
-import { ProductContext } from "@/context/ProductContext";
+
+import { useCartContext } from "@/context/cartContext";
 import Counter from "../product/Counter";
 import Image from "next/image";
 import styles from "../../styles/components/Cart.module.css";
 
 const CartItem = ({ product }) => {
-  const { id, imgSrc, title, price, count, color, size } = product; // دریافت ویژگی‌های محصول
-  const { updateCartProductCount, removeFromCart } = useContext(ProductContext);
-
+  
+  const { product_id,quantity, image_urls, title, price, color, size } = product; // دریافت ویژگی‌های محصول
+  const { updateCartProductCount, removeFromCart } = useCartContext()
   const formatPrice = (price) => {
+    if (typeof price !== "number" || isNaN(price)) {
+      return "نامعتبر";
+    }
     return `${price.toLocaleString("fa-IR")} تومان`;
   };
+const displayColor =
+  typeof color === "object" && color !== null ? color.name : color;
 
   return (
     <tr>
@@ -21,19 +26,21 @@ const CartItem = ({ product }) => {
           <div className="col-4">
             <Image
               className={styles.cartImage}
-              src={imgSrc}
+              src={image_urls?.[0]}
               width="150"
               height="137"
-              alt={title}
+              alt={title || "Product Image"}
+              style={{ objectFit: "contain" }}
             />
           </div>
           <div className="col-8 d-flex align-items-center">
             <div>
-              <span className={styles.cartTitle}>{title}</span>
-              <p className={styles.cartTitle}>
-                رنگ: {color ? color.name : "نامشخص"}
-              </p>
-              <p className={styles.cartTitle}>سایز: {size || "نامشخص"}</p>
+              <span className={styles.cartTitle}>{title || "بدون عنوان"}</span>
+              {displayColor && (
+                <p className={styles.cartTitle}>رنگ: {displayColor}</p>
+              )}
+
+              {size && <p className={styles.cartTitle}>سایز: {size}</p>}
             </div>
           </div>
         </div>
@@ -41,23 +48,41 @@ const CartItem = ({ product }) => {
 
       {/* قیمت محصول */}
       <td className={`${styles.cartTitle} align-middle`}>
-        {formatPrice(price * count)} {/* محاسبه قیمت بر اساس تعداد */}
+        {formatPrice(price * quantity)}
       </td>
 
       {/* مدیریت تعداد محصول */}
       <td className="align-middle">
         <div className={styles.productDetailShopQuantity}>
           <Counter
-            initialCount={count}
-            onAddToCart={() => updateCartProductCount(id, count + 1)} // افزایش تعداد
-            onRemoveFromCart={() => updateCartProductCount(id, count - 1)} // کاهش تعداد
+            initialCount={quantity || 1}
+            onAddToCart={() =>
+              updateCartProductCount(
+                product_id,
+                (quantity || 0) + 1,
+                color,
+                size
+              )
+            }
+            onRemoveFromCart={() =>
+              updateCartProductCount(
+                product_id,
+                (quantity || 1) - 1,
+                color,
+                size
+              )
+            }
+            // کاهش تعداد
           />
         </div>
       </td>
 
       {/* حذف محصول */}
       <td className="align-middle">
-        <button className="btn" onClick={() => removeFromCart(id)}>
+        <button
+          className="btn"
+          onClick={() => removeFromCart(product_id, color, size)}
+        >
           <i className="bi bi-x text-danger"></i>
         </button>
       </td>

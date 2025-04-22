@@ -1,14 +1,14 @@
 "use client"
 import React, { useContext,useState } from "react";
-import { ProductContext } from "@/context/ProductContext";
+import { useCartContext } from "@/context/cartContext";
 import CheckoutButton from "./CheckoutButton";
 import styles from "../../styles/components/Cart.module.css";
 const SummaryBox = ({ shippingPrice, discountValue }) => {
-  const { cartProducts } = useContext(ProductContext); // دریافت محصولات سبد خرید از Context
+   const { cartItems } = useCartContext(); // دریافت محصولات سبد خرید از Context
   
   const calculateTotal = () => {
-    return cartProducts.reduce(
-      (total, product) => total + product.price * product.count,
+    return cartItems.reduce(
+      (total, product) => total + product.price * product.quantity,
       0
     );
   };
@@ -39,7 +39,7 @@ const SummaryBox = ({ shippingPrice, discountValue }) => {
             <div className="d-flex justify-content-between mb-4">
               <span>هزینه ارسال</span>
               <span>
-                {shippingPrice
+                {typeof shippingPrice === "number"
                   ? formatPrice(shippingPrice)
                   : "محاسبه پس از انتخاب آدرس"}
               </span>

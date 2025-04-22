@@ -1,12 +1,12 @@
 "use client"
 
 import ShareModal from './ShareModal';
-import React, { useState ,useContext } from "react";
-import { ProductContext } from "@/context/ProductContext";
+import React, { useState } from "react";
+import { useCartContext } from "@/context/cartContext";
 import { useRouter } from "next/navigation";
 
 const AddToCart = ({ product, selectedColor, selectedSize }) => {
-  const { addToCart } = useContext(ProductContext);
+  const { addToCart } = useCartContext();
   const router = useRouter();
   const [addedToCart, setAddedToCart] = useState(false); // آیا محصول به سبد اضافه شده؟
   
@@ -42,7 +42,7 @@ const AddToCart = ({ product, selectedColor, selectedSize }) => {
       
       setAddedToCart(true); // وضعیت افزودن به سبد خرید را تغییر می‌دهد
       setCartModalVisible(true); // مدال را نمایش می‌دهد
-      addToCart(product, selectedColor, selectedSize); // محصول را به سبد اضافه می‌کند
+      addToCart(product.id, 1,selectedColor, selectedSize); // محصول را به سبد اضافه می‌کند
     
   };
   return (

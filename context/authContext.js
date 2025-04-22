@@ -1,86 +1,87 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { useRouter } from "next/navigation"; 
-const AuthContext = createContext(undefined);
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-export function AuthProvider({ children }) {
+
+export const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const router = useRouter();
   const [user, setUser] = useState(null);
- const router = useRouter();
-  useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) {
-      fetch("http://localhost:5000/api/auth/profile", {
-        credentials: "include",
-      })
-        .then((res) => res.json())
-        .then((data) => setUser(data.user));
+  
+  const fetchUser = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/auth/me", {
+        withCredentials: true,
+      });
+      setUser(res.data);
+    } catch {
+      setUser(null);
     }
+  };
+
+  const login = async (email, password) => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { email, password },
+        { withCredentials: true }
+      );
+      localStorage.removeItem("guestCart"); // پاکسازی سبد خرید مهمان بعد از ورود
+      await fetchUser();
+
+      router.push("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+      // Handle login error, e.g., set an error state
+      alert("ورود ناموفق. لطفاً ایمیل و رمز عبور را بررسی کنید.");
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/auth/logout",
+        {},
+        { withCredentials: true }
+      );
+      setUser(null);
+      router.push("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Handle logout error, e.g., set an error state
+      alert("خطا در خروج از حساب کاربری.");
+    }
+  };
+
+  const register = async (email, password, name) => {
+    try {
+      await axios.post("http://localhost:5000/api/auth/register", {
+        // Corrected registration route
+        email,
+        password,
+        name,
+      });
+      await login(email, password);
+    } catch (error) {
+      console.error("Registration failed:", error);
+      // Handle registration error, e.g., set an error state
+      alert("ثبت‌نام ناموفق. لطفاً اطلاعات را بررسی کنید.");
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
   }, []);
 
-  async function login(email, password) {
-     try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await res.json();
-    if (data.user) {
-      Cookies.set("token", data.token, { expires: 7 });
-      setUser(data.user);
-     router.push("/profile");
-    } else {
-      // مدیریت خطا در صورت عدم وجود کاربر
-      console.error("Login failed:", data.message);
-    }
-     } catch (error) {
-      // مدیریت خطاهای شبکه یا سایر خطاها
-      console.error("Error during login:", error);
-    }
-  }
-  async function register(email, password, name) {
-     try {
-       const res = await fetch("http://localhost:5000/api/auth/register", {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-         credentials: "include",
-         body: JSON.stringify({ email, password, name }),
-       });
-
-       const data = await res.json();
-       if (data.user) {
-         Cookies.set("token", data.token, { expires: 7 });
-         setUser(data.user);
-       } else {
-         // مدیریت خطا در صورت عدم وجود کاربر
-         console.error("Registration failed:", data.message);
-       }
-     } catch (error) {
-       // مدیریت خطاهای شبکه یا سایر خطاها
-       console.error("Error during registration:", error);
-     }
-  }
-
-  function logout() {
-    fetch("http://localhost:5000/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    }).then(() => {
-      Cookies.remove("token");
-      setUser(null);
-    });
-  }
-
   return (
-    <AuthContext.Provider value={{ user, login, logout, register }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, register, isAuthenticated: !!user }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);

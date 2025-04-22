@@ -1,6 +1,7 @@
 "use client"
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { ProductContext } from "@/context/ProductContext";
+import { useSearchParams } from 'next/navigation'; // اضافه کردن useSearchParams
 
 import "../../../styles/product.css";
 import "../../../styles/productlist.css";
@@ -18,8 +19,24 @@ import Pagination from '@/components/productlist/Pagination';
 
 
 const ProductList = () => {
-   
-   const {products,filteredProducts, handleFilterChange} = useContext(ProductContext);
+  const searchParams = useSearchParams(); // استفاده از useSearchParams
+  const categoryId = searchParams.get("categoryId"); // گرفتن categoryId از URL
+
+  const { filteredProducts, handleFilterChange, fetchProducts } =
+    useContext(ProductContext);
+
+  // اضافه کردن useEffect برای دریافت محصولات بر اساس categoryId هنگام تغییر آن
+  useEffect(() => {
+    if (categoryId) {
+      // فراخوانی تابعی در ProductContext برای فیلتر/دریافت محصولات بر اساس categoryId
+      // شما باید این منطق را در ProductContext خود پیاده سازی کنید
+      fetchProducts({ categoryId: categoryId }); // مثال: فرض کنید تابع fetchProducts یک آبجکت فیلتر می پذیرد
+    } else {
+      // اگر categoryId در URL نبود، شاید همه محصولات را نمایش دهید
+      // یا منطق پیش فرض دیگری داشته باشید
+      fetchProducts({}); // مثال: دریافت همه محصولات
+    }
+  }, [categoryId, fetchProducts]); // وابسته به categoryId و fetchProducts تا با تغییر آنها مجددا اجرا شود
 
   return (
     <>
@@ -35,7 +52,7 @@ const ProductList = () => {
               <FilterProduct title="محدوده قیمت">
                 <PriceRange />
               </FilterProduct>
-            
+
               <FilterProduct>
                 <SpecialOffer />
               </FilterProduct>
@@ -52,7 +69,10 @@ const ProductList = () => {
                 onFilterChange={handleFilterChange}
               />
               <div className="container product-list-grid">
-                <Pagination totalPages={5} products={products}/>
+                <Pagination
+                  totalPages={5}
+                  products={filteredProducts}
+                />
               </div>
             </div>
           </div>

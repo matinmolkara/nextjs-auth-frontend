@@ -20,15 +20,26 @@ const Page = () => {
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
-     if (!products.length) return;
+    if (!products.length) return;
     const pathParts = pathname.split("/");
     const productId = pathParts[pathParts.length - 1];
     console.log("Product ID از URL:", productId);
 
     const foundProduct = getProductById(productId);
- 
-        if (foundProduct) setProduct(foundProduct);
-     
+    console.log("PAGE: Found product:", foundProduct); // <-- لاگ محصول پیدا شده
+    if (foundProduct) {
+      console.log(
+        "PAGE: Product price:",
+        foundProduct.price,
+        "Type:",
+        typeof foundProduct.price
+      );
+      // <-- لاگ قیمت و نوع آن
+      setProduct(foundProduct);
+    } else {
+      console.log("PAGE: Product not found for ID:", productId);
+      setProduct(null); // اطمینان از ریست شدن محصول اگر یافت نشد
+    }
   }, [pathname,getProductById,products]);
 
   if (!product) {

@@ -6,6 +6,7 @@ import AddressModal from "./AddressModal";
 import styles from "../../styles/components/Address.module.css";
 
 const AddressTable = ({ onAddressSelect, isShippingPage }) => {
+  console.log("AddressTable: Received onSelectAddress prop:", onAddressSelect); // آیا تابع از والد آمده؟
   const {
     addresses,
     setAddressess,
@@ -14,7 +15,7 @@ const AddressTable = ({ onAddressSelect, isShippingPage }) => {
     isEditMode,
     setIsEditMode,
   } = useContext(ProductContext); // دریافت آدرس ها از Context
- 
+
   const handleAddAddress = (newAddress) => {
     if (isEditMode) {
       // ویرایش آدرس

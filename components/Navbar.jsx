@@ -1,95 +1,96 @@
-import React from "react";
+"use client"
+import React, { useState, useEffect } from "react";
 import styles from "../styles/components/Navbar.module.css";
 import Link from "next/link";
+
+
+// تابع کمکی برای تبدیل لیست تخت (flat list) دسته‌بندی‌ها به ساختار درختی
+const buildCategoryTree = (categories, parentId = null) => {
+  const tree = [];
+  for (const category of categories) {
+    if (category.parent_id === parentId) {
+      // این دسته‌بندی یک والد است (یا در بالاترین سطح قرار دارد)
+      const children = buildCategoryTree(categories, category.id); // فرزندان آن را پیدا کن
+      if (children.length > 0) {
+        // اگر فرزند داشت، به آبجکت اضافه کن
+        category.children = children;
+      } else {
+        // اگر فرزند نداشت، آرایه children خالی باشد یا اصلا پراپرتی children نداشته باشد
+        // برای سادگی، اگر فرزند نداشت، children را null قرار می دهیم یا حذف می کنیم
+        delete category.children; // یا category.children = null;
+      }
+      tree.push(category);
+    }
+  }
+  return tree;
+};
+
+
+
+
 const Navbar = () => {
-  const dropdownData = [
-    {
-      title: "اکسسوری",
-      sections: [
-        {
-          heading: "کمربند و ساسبند مردانه",
-          links: [
-            {
-              label: "بندآویز شلوار",
-              href: "/productlist?category=accessories&sub=brace-suspenders",
-            },
-            {
-              label: "تسمه کمربند",
-              href: "/productlist?category=accessories&sub=belt-strap",
-            },
-            {
-              label: "ساسبند",
-              href: "/productlist?category=accessories&sub=suspenders",
-            },
-            {
-              label: "سگک کمربند",
-              href: "/productlist?category=accessories&sub=buckle",
-            },
-            {
-              label: "کمربند",
-              href: "/productlist?category=accessories&sub=belt",
-            },
-          ],
-        },
-        {
-          heading: "عینک آفتابی",
-          links: [
-            {
-              label: "عینک آفتابی مردانه",
-              href: "/productlist?category=sunglasses&sub=men",
-            },
-            {
-              label: "عینک آفتابی زنانه",
-              href: "/productlist?category=sunglasses&sub=women",
-            },
-            { label: "اسپرت", href: "#" },
-            { label: "طبی", href: "#" },
-          ],
-        },
-        {
-          heading: "کلاه مردانه",
-          links: [
-            { label: "کلاه لبه دار", href: "#" },
-            { label: "کلاه پشمی", href: "#" },
-          ],
-        },
-        {
-          heading: "کراوات و پاپیون مردانه",
-          links: [
-            { label: "کراوات مردانه", href: "#" },
-            { label: "پاپیون", href: "#" },
-            { label: "دستمال گردن", href: "#" },
-          ],
-        },
-        {
-          heading: "ساعت",
-          links: [
-            { label: "ساعت مردانه", href: "#" },
-            { label: "ساعت زنانه", href: "#" },
-            { label: "اسپرت", href: "#" },
-          ],
-        },
-      ],
-    },
-    {
-      title: "کفش",
-      sections: [
-        {
-          heading: "کفش چرم",
-          links: [
-            {
-              label: "کفش مردانه",
-              href: "/productlist?category=shoes&sub=men",
-            },
-            {
-              label: "کفش زنانه",
-              href: "/productlist?category=shoes&sub=women",
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        // آدرس API شما برای دریافت همه دسته‌بندی‌ها
+        // مطمئن شوید که این آدرس صحیح است
+        const res = await fetch("http://localhost:5000/api/categories"); // مثال: فرض کنید API شما در مسیر /api/categories قرار دارد
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+
+        // تبدیل لیست تخت به ساختار درختی
+        // فرض می کنیم دسته‌بندی‌های سطح بالا parent_id برابر null دارند
+        const nestedCategories = buildCategoryTree(data);
+        setCategories(nestedCategories);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []); // آرایه وابستگی خالی به معنای اجرای یک بار بعد از mount
+
+  // تابع کمکی برای تبدیل ساختار درختی به ساختار مورد نیاز dropdownData
+  // این تابع کمی پیچیده تر است زیرا نیاز داریم سطوح مختلف را به format dropdownData نگاشت کنیم
+  const transformToDropdownData = (nestedCategories) => {
+    return nestedCategories.map((level1) => ({
+      title: level1.name, // دسته‌بندی سطح 1 نام آن عنوان اصلی dropdown است
+      sections: level1.children
+        ? level1.children.map((level2) => ({
+            // دسته‌بندی‌های سطح 2 بخش‌ها (sections) هستند
+            heading: level2.name, // نام سطح 2 عنوان بخش (heading) است
+            links: level2.children
+              ? level2.children.map((level3) => ({
+                  // دسته‌بندی‌های سطح 3 لینک‌های داخل بخش هستند
+                  label: level3.name, // نام سطح 3 لیبل لینک است
+                  // href باید به صفحه لیست محصولات اشاره کند و ID دسته‌بندی را بفرستد
+                  href: `/productlist?categoryId=${level3.id}`,
+                }))
+              : [], // اگر سطح 2 فرزندی نداشت، لینک‌ها خالی هستند
+          }))
+        : [], // اگر سطح 1 فرزندی (سطح 2) نداشت، بخش‌ها خالی هستند
+    }));
+  };
+
+  const dropdownData = transformToDropdownData(categories);
+
+  if (loading) {
+    return <div>در حال بارگذاری دسته‌بندی‌ها...</div>; // یا یک Spinner
+  }
+
+  if (error) {
+    return <div>خطا در بارگذاری دسته‌بندی‌ها: {error}</div>;
+  }
+
+  // JSX برای رندر کردن نوار ناوبری
 
   return (
     <>

@@ -1,11 +1,57 @@
 import React from 'react'
 import styles from "../../styles/components/ProductGrid.module.css";
 import Link from 'next/link';
+
 const ProductDetails = ({comments,product}) => {
+  console.log("DETAILS: Received product prop:", product); // <-- لاگ prop دریافتی
+  // اضافه کردن مقدار پیش‌فرض برای جلوگیری از خطا هنگام دسترسی به پراپرتی‌های product اگر null باشد
+  const safeProduct = product || {};
+
+  const { title, price, real_price } = safeProduct; // price اینجا number است, real_price رشته است
+
+  console.log("DETAILS: Product price:", price, "Type:", typeof price);
+  console.log(
+    "DETAILS: Product real_price:",
+    real_price,
+    "Type:",
+    typeof real_price
+  );
+
+  const formatPrice = (priceInput) => {
+    // تبدیل ورودی به عدد قبل از بررسی نوع (برای مدیریت رشته‌های عددی مثل real_price)
+    const numericValue = parseFloat(priceInput);
+
+    if (typeof numericValue !== "number" || isNaN(numericValue)) {
+      console.warn(
+        "DETAILS: formatPrice received invalid input or failed parse:",
+        priceInput
+      );
+      return "نامعتبر";
+    }
+    return `${numericValue.toLocaleString("fa-IR")} تومان`;
+  };
+
+  // محاسبه درصد تخفیف (اختیاری)
+  const calculateDiscount = () => {
+    const numericPrice = parseFloat(price);
+    const numericRealPrice = parseFloat(real_price);
+    if (
+      numericRealPrice &&
+      numericPrice < numericRealPrice &&
+      numericRealPrice > 0
+    ) {
+      return Math.round(
+        ((numericRealPrice - numericPrice) / numericRealPrice) * 100
+      );
+    }
+    return null; // یا 0 اگر تخفیفی نیست
+  };
+  const discountPercent = calculateDiscount();
+
   return (
     <div>
       <div className="product-detail-shop">
-        <h4>{product.title}</h4>
+        <h4>{title}</h4>
         <div className="product-detail-shop-reviews">
           <span>
             <Link href="#"> ثبت نظر </Link>
@@ -27,9 +73,25 @@ const ProductDetails = ({comments,product}) => {
       </div>
       <div className="product-detail-shop">
         <div className={styles.brandCartFirstOffPercent}>
-          <span className={styles.brandCartPrice}>1,386,000 تومان</span>
-          <span className={styles.brandCartRealPrice}> 1800,000 تومان </span>
-          <span className={styles.brandCartOffPercent}> 24% </span>
+          {/* نمایش قیمت اصلی (باید درست کار کند) */}
+          <span className={styles.brandCartPrice}>{formatPrice(price)}</span>
+
+          {/* نمایش قیمت قبلی (خط خورده) - با استفاده از real_price */}
+          {/* فقط اگر قیمت قبلی با قیمت فعلی متفاوت است نمایش بده */}
+          {real_price && parseFloat(real_price) !== price && (
+            <span className={styles.brandCartRealPrice}>
+              {formatPrice(real_price)}{" "}
+              {/* formatPrice الان رشته را هم مدیریت می‌کند */}
+            </span>
+          )}
+
+          {/* نمایش درصد تخفیف محاسبه شده */}
+          {discountPercent && discountPercent > 0 && (
+            <span className={styles.brandCartOffPercent}>
+              {" "}
+              {discountPercent}%{" "}
+            </span>
+          )}
         </div>
         <div className="product-detail-shop-property">
           <ul>
@@ -48,8 +110,6 @@ const ProductDetails = ({comments,product}) => {
           </ul>
         </div>
       </div>
-      
-      
     </div>
   );
 }

@@ -36,7 +36,7 @@ const AddressModal = ({ onSave, initialData = null }) => {
       );
       if (selectedProvince) {
         setFilteredCities(
-          cities.filter((city) => city.provinceId === selectedProvince.id)
+          cities.filter((city) => city.province_id === selectedProvince.id)
         );
       }
     }
@@ -53,11 +53,11 @@ const handleKeyDown = (e) => {
     e.preventDefault(); // جلوگیری از ورود کاراکترهای نامطلوب
   }
 };
-  const handleProvinceChange = (provinceId) => {
+  const handleProvinceChange = (province_id) => {
     const provinceName =
-      provinces.find((p) => p.id === +provinceId)?.name || "";
+      provinces.find((p) => p.id === +province_id)?.name || "";
     setNewAddress((prev) => ({ ...prev, province: provinceName, city: "" }));
-    setFilteredCities(cities.filter((city) => city.provinceId === +provinceId));
+    setFilteredCities(cities.filter((city) => city.province_id === +province_id));
   };
 
   const handleSave = () => {

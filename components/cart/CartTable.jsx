@@ -1,11 +1,11 @@
 "use client";
-import React, { useContext } from "react";
-import { ProductContext } from "@/context/ProductContext";
+
+import { useCartContext } from "@/context/cartContext";
 import CartItem from "./CartItem";
 import styles from "../../styles/components/Cart.module.css";
 
 const CartTable = () => {
-  const { cartProducts } = useContext(ProductContext); // دریافت محصولات سبد خرید از Context
+  const { cartItems } = useCartContext(); // دریافت محصولات سبد خرید از Context
 
   return (
     <div className="container">
@@ -22,8 +22,9 @@ const CartTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {cartProducts.map((product) => (
-                  <CartItem key={product.id} product={product} />
+                
+                {cartItems.map((item) => (
+                  <CartItem key={item.product_id} product={item} />
                 ))}
               </tbody>
               

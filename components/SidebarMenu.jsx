@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { ProductContext } from "../context/ProductContext";
+import { useCartContext } from "@/context/cartContext";
 import styles from "../styles/components/Sidenavigation.module.css";
 import stylesHeader from "../styles/components/Header.module.css";
 import Image from "next/image";
@@ -9,7 +9,7 @@ import Icon from "../public/images/Icon.png";
 import Searchz from "../public/images/icon/searchz.png";
 
 const SidebarMenu = () => {
-   const { cartProducts } = useContext(ProductContext);
+    const { cartItems } = useCartContext();
   const menuRef = useRef(null); // برای دسترسی به DOM عنصر منو
 
   const [isActive, setIsActive] = useState(false);
@@ -152,7 +152,7 @@ const SidebarMenu = () => {
                 <div className={stylesHeader.cart}>
                   <Link href="/checkout/cart">
                     <i className="bi bi-cart">
-                      <span className="">{cartProducts.length} </span>
+                      <span className="">{cartItems?.length || 0} </span>
                     </i>
                   </Link>
                 </div>

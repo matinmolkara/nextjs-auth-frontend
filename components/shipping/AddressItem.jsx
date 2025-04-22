@@ -47,7 +47,17 @@ const AddressItem = ({
                 type="radio"
                 name="flexRadioDefault"
                 id={`flexRadioDefault${id}`}
-                onChange={() => onSelectAddress(province)} // ارسال هزینه ارسال به تابع والد
+                onChange={() =>{
+                   console.log(
+                     "AddressItem: Radio changed for province:",
+                     province
+                   );
+                   console.log(
+                     "AddressItem: Calling onSelectAddress prop:",
+                     onSelectAddress
+                   );
+                   onSelectAddress(province)
+                  }} // ارسال هزینه ارسال به تابع والد
               />
             </div>
           </td>

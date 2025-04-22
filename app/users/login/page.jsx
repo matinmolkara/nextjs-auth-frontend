@@ -5,12 +5,17 @@ import styles from "../../../styles/components/Login.module.css";
 import LoginHeader from "@/components/login/LoginHeader";
 import Link from "next/link";
 import LoginFrame from "@/components/login/LoginFrame";
+import { AuthProvider } from "@/context/authContext";
+
+
+
 const Login = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   return (
-    <LoginFrame>
+   <AuthProvider>
+     <LoginFrame>
       <form className="row g-3"
         onSubmit={async (e) => {
           e.preventDefault();
@@ -75,6 +80,7 @@ const Login = () => {
       </form>
       
     </LoginFrame>
+   </AuthProvider>
   );
 };
 

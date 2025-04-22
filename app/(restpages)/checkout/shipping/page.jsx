@@ -6,27 +6,35 @@ import AddressTable from '@/components/shipping/AddressTable';
 import CartItemPreview from '@/components/shipping/CartItemPreview';
 import styles from "../../../../styles/components/Address.module.css";
 import { ProductContext } from "@/context/ProductContext";
+import { useCartContext } from "@/context/cartContext";
 import Link from "next/link";
 
 const Address = () => {
   const router = useRouter();
    const {
-     cartProducts,
-     removeFromCart,
+     
      calculateShippingPrice,
      discountValue,
    } = useContext(ProductContext);
 
+const {cartItems, removeFromCart} = useCartContext();
+
+
     useEffect(() => {
-      if (cartProducts.length === 0) {
+      if (cartItems.length === 0) {
         router.push("/checkout/cart");
       }
-    }, [cartProducts, router]);
+    }, [cartItems, router]);
    const [selectedShippingPrice, setSelectedShippingPrice] = useState(0);
 
 
    const handleSelectAddress = (province) => {
+    console.log(
+      "Address Page: handleSelectAddress called with province:",
+      province
+    );
      const shippingPrice = calculateShippingPrice(province);
+     console.log("Address Page: Calculated shipping price:", shippingPrice);
      setSelectedShippingPrice(shippingPrice);
    };
   return (
@@ -54,7 +62,7 @@ const Address = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {cartProducts.map((product) => (
+                      {cartItems.map((product) => (
                         <CartItemPreview
                           key={product.id}
                           product={product}
