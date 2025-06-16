@@ -1,16 +1,39 @@
-.hero {
-    background-image: url('../../public/images/hero/background-hero.png');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 600px;
+.hero{
+    position: relative;
+        height: 600px;
+      
+   
+        
+        overflow: hidden;
 }
 
-.heroDetail {
-    height: 600px;
-    display: flex;
-    align-items: center;
+.hero img{
+    width: 100%;
+        height: 100%;
+   
+        object-fit: cover;
 }
+
+.heroDetail{
+    position: absolute;
+        /* این باعث میشه heroDetail روی عکس قرار بگیره */
+        top: 0;
+        left: 0;
+        width: 100%;
+        /* مطمئن شو که تمام عرض hero رو بگیره */
+        height: 100%;
+        /* مطمئن شو که تمام ارتفاع hero رو بگیره */
+        display: flex;
+        flex-direction: column;
+        /* برای اینکه h1 و h2 زیر هم قرار بگیرن */
+        justify-content: center;
+        /* محتوا رو عمودی وسط قرار میده */
+        align-items: center;
+        /* محتوا رو افقی وسط قرار میده */
+      
+}
+
+
 
 .heroDetail h1,
 .heroDetail h2 {

@@ -1,7 +1,6 @@
-"use client"
-import { useState } from "react";
-import AddressModal from "./AddressModal";
-
+"use client";
+import { useContext } from "react";
+import { ProductContext } from "@/context/ProductContext";
 import styles from "../../styles/components/Address.module.css";
 
 const AddressItem = ({
@@ -11,27 +10,23 @@ const AddressItem = ({
   onEditAddress,
   isShippingPage,
 }) => {
+  const { setDefaultAddress,provinces,cities } = useContext(ProductContext);
   const {
     id,
     reciever,
-    province,
-    city,
-    fullAddress,
-    buildingNum,
-    unitNum,
-    zipCode,
+    province_id,
+    city_id,
+    full_address,
+    building_num,
+    unit_num,
+    zip_code,
     tel,
-  } = address; // دریافت ویژگی‌های محصول
+    is_default
+  } = address;
 
-//  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-// const handleEdit = (updatedAddress) => {
-//   onEditAddress(id, updatedAddress); // ارسال آدرس ویرایش‌شده به تابع والد
-//   setIsEditModalOpen(false); // بستن مودال پس از ویرایش
-// };
-//   const formatPrice = (price) => {
-//     return `${price.toLocaleString("fa-IR")} تومان`;
-//   };
 
+  const provinceName = provinces.find((p) => p.id === province_id)?.name || "";
+  const cityName = cities.find((c) => c.id === city_id)?.name || "";
   return (
     <>
       <tr>
@@ -47,26 +42,23 @@ const AddressItem = ({
                 type="radio"
                 name="flexRadioDefault"
                 id={`flexRadioDefault${id}`}
-                onChange={() =>{
-                   console.log(
-                     "AddressItem: Radio changed for province:",
-                     province
-                   );
-                   console.log(
-                     "AddressItem: Calling onSelectAddress prop:",
-                     onSelectAddress
-                   );
-                   onSelectAddress(province)
-                  }} // ارسال هزینه ارسال به تابع والد
+                onChange={async () => {
+                  
+                  await setDefaultAddress(id); // 👈 ارسال به سرور
+                  onSelectAddress(province_id); // 👈 محاسبه هزینه ارسال
+                }}
               />
             </div>
           </td>
         )}
-
+        <td className="align-middle">
+          {is_default && (
+            <span className="badge bg-success">آدرس پیش‌فرض</span>
+          )}
+        </td>
         <td className="align-middle">{reciever}</td>
-
         <td className={`${styles.cartTitle} align-middle`}>
-          {`${province} - ${city} - ${fullAddress} - پلاک : ${buildingNum} - واحد: ${unitNum} - کدپستی: ${zipCode}`}
+          {`${provinceName} - ${cityName} - ${full_address} - پلاک : ${building_num} - واحد: ${unit_num} - کدپستی: ${zip_code}`}
         </td>
         <td className="align-middle">{tel}</td>
         <td className="align-middle">
@@ -74,7 +66,7 @@ const AddressItem = ({
             className="btn"
             data-bs-toggle="modal"
             data-bs-target="#addressModal"
-            onClick={() => onEditAddress(address)} // ارسال آدرس به والد
+            onClick={() => onEditAddress(address)}
           >
             <i className="bi bi-pen"></i>
           </button>
@@ -83,12 +75,6 @@ const AddressItem = ({
           </button>
         </td>
       </tr>
-      {/* {isEditModalOpen && (
-        <AddressModal
-          onSave={handleEdit}
-          initialData={address} // ارسال اطلاعات اولیه به مودال
-        />
-      )} */}
     </>
   );
 };

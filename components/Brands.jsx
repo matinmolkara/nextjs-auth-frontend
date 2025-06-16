@@ -1,103 +1,51 @@
-import React from 'react'
+// components/Brands.jsx
+"use client";
+import React, { useEffect, useState } from "react";
+import { getPageBySlug, getProductById } from "@/app/api/api";
+import Link from "next/link";
+import Image from "next/image";
 import tabStyles from "../styles/components/Tabs.module.css";
 import gridStyles from "../styles/components/ProductGrid.module.css";
-import Image from "next/image";
-import Link from "next/link";
+
 const Brands = () => {
- const navTabs = [
-   {
-     id: "pills-invest-tab",
-     target: "#pills-invest",
-     ariaControls: "pills-invest",
-     label: "همه",
-     isActive: true,
-   },
-   {
-     id: "pills-depo-tab",
-     target: "#pills-depo",
-     ariaControls: "pills-depo",
-     label: "کیف",
-     isActive: false,
-   },
-   {
-     id: "pills-draw-tab",
-     target: "#pills-draw",
-     ariaControls: "pills-draw",
-     label: "کفش",
-     isActive: false,
-   },
-   {
-     id: "pills-belt-tab",
-     target: "#pills-belt",
-     ariaControls: "pills-belt",
-     label: "کمربند",
-     isActive: false,
-   },
-   {
-     id: "pills-glass-tab",
-     target: "#pills-glass",
-     ariaControls: "pills-glass",
-     label: "عینک دودی",
-     isActive: false,
-   },
- ];
- const tabs = [
-   {
-     id: "pills-invest",
-     ariaLabelledBy: "pills-invest-tab",
-     isActive: true,
-     content: [
-       {
-         imgSrc: "/images/brands/leather_strap_3.jpg",
-         title: "کمربند مردانه چرم پوست ماری مدل راگا",
-         price: "1,386,000 تومان",
-         realPrice: "1800,000 تومان",
-         discount: "24%",
-         specialOffer: true,
-       },
-       {
-         imgSrc: "/images/brands/leather_su_2.jpg",
-         title: "ساسبند مردانه ماسیمو دوتی مشکی",
-         price: "1,386,000 تومان",
-         realPrice: "1800,000 تومان",
-         discount: "24%",
-         specialOffer: false,
-       },
-       {
-         imgSrc: "/images/brands/men-s-suspenders.jpeg",
-         title: "ساس بند مردانه چرم طبیعی دستدوز",
-         price: "1,386,000 تومان",
-         realPrice: "1800,000 تومان",
-         discount: "24%",
-         specialOffer: true,
-       },
-     ],
-   },
-   {
-     id: "pills-depo",
-     ariaLabelledBy: "pills-depo-tab",
-     isActive: false,
-     content: [],
-   },
-   {
-     id: "pills-draw",
-     ariaLabelledBy: "pills-draw-tab",
-     isActive: false,
-     content: [],
-   },
-   {
-     id: "pills-belt",
-     ariaLabelledBy: "pills-belt-tab",
-     isActive: false,
-     content: [],
-   },
-   {
-     id: "pills-glass",
-     ariaLabelledBy: "pills-glass-tab",
-     isActive: false,
-     content: [],
-   },
- ];
+  const [tabsData, setTabsData] = useState([]);
+  const [productsMap, setProductsMap] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadBrands = async () => {
+      try {
+        const page = await getPageBySlug("home");
+        const topBrands = page.data?.content?.topBrands || [];
+
+        const productIds = topBrands.flatMap((tab) => tab.productIds || []);
+        const uniqueIds = [...new Set(productIds)];
+
+        const fetches = await Promise.all(
+          uniqueIds.map((id) => getProductById(id))
+        );
+        const productDict = {};
+        fetches.forEach((p) => {
+         
+          if (p && p.id) productDict[p.id] = p;
+        });
+
+        setTabsData(topBrands);
+        setProductsMap(productDict);
+      } catch (err) {
+        console.error("خطا در دریافت برندها:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBrands();
+  }, []);
+
+  if (loading)
+    return <div className="text-center py-5">در حال بارگذاری...</div>;
+  if (!tabsData.length) return null;
+
   return (
     <div className="brand">
       <div className="faq-1">
@@ -107,23 +55,18 @@ const Brands = () => {
             id="pills-tab"
             role="tablist"
           >
-            {navTabs.map((tab, index) => (
-              <li
-                className={`nav-item ${tabStyles.navItem}`}
-                role="presentation"
-                key={index}
-              >
+            {tabsData.map((tab, index) => (
+              <li className={`nav-item ${tabStyles.navItem}`} key={index}>
                 <button
                   className={`nav-link ${tabStyles.navLink} ${
-                    tab.isActive ? "customNav active" : ""
+                    index === 0 ? "customNav active" : ""
                   }`}
-                  id={tab.id}
+                  id={`tab-${index}`}
                   data-bs-toggle="pill"
-                  data-bs-target={tab.target}
+                  data-bs-target={`#pane-${index}`}
                   type="button"
                   role="tab"
-                  aria-controls={tab.ariaControls}
-                  aria-selected={tab.isActive}
+                  aria-selected={index === 0}
                 >
                   {tab.label}
                 </button>
@@ -131,92 +74,149 @@ const Brands = () => {
             ))}
           </ul>
           <div className="tab-content" id="pills-tabContent">
-            {tabs.map((tab, index) => (
-              <div
-                key={index}
-                className={`tab-pane fade ${tab.isActive ? "show active" : ""}`}
-                id={tab.id}
-                role="tabpanel"
-                aria-labelledby={tab.ariaLabelledBy}
-                tabIndex="0"
-              >
-                <div className="container">
-                  <div className="row">
-                    {tab.content.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="col-12 col-lg-6 col-xl-3 d-flex justify-content-center justify-content-lg-start"
-                      >
-                        <div className={gridStyles.brandCart}>
-                          <div className={gridStyles.brandCartOverlay}>
-                            <div className={gridStyles.brandCartOverlayIcons}>
-                              <Link href="#">
-                                <i className="bi bi-heart"></i>
-                              </Link>
-                              <Link href="#">
-                                <i className="bi biCart3"></i>
-                              </Link>
-                            </div>
-                          </div>
-                          {item.specialOffer && (
-                            <div className={gridStyles.brandCartOffSign}>
-                              <span>فروش ویژه</span>
-                            </div>
-                          )}
-                          <Image src={item.imgSrc} alt={item.title} width={301} height={261}/>
-                          <div className={gridStyles.brandCartDetail}>
-                            <div className={gridStyles.brandCartFirstTitle}>
-                              <h4 className={gridStyles.brandCartTitle}>
-                                {item.title}
-                              </h4>
-                            </div>
-                            <div className={gridStyles.brandCartRankingStar}>
-                              <i className="bi bi-star-fill"></i>
-                              <i className="bi bi-star-fill"></i>
-                              <i className="bi bi-star-fill"></i>
-                              <i className="bi bi-star-fill"></i>
-                              <i className="bi bi-star"></i>
-                            </div>
-                            <div className={gridStyles.brandCartFirstOffPercent}>
-                              <span className={gridStyles.brandCartPrice}>
-                                {item.price}
-                              </span>
-                              <span className={gridStyles.brandCartRealPrice}>
-                                {item.realPrice}
-                              </span>
-                              <span className={gridStyles.brandCartOffPercent}>
-                                {item.discount}
-                              </span>
-                            </div>
-                            <button className="btn btn-dark">
-                              <Link href="#">
-                                <i className="bi bi-arrow-left-short text-white"></i>
-                              </Link>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {tab.content.length > 0 && (
+            {tabsData.map((tab, index) => {
+              const products = (tab.productIds || [])
+                .map((pid) => productsMap[pid])
+                .filter(Boolean);
+
+              return (
+                <div
+                  key={index}
+                  className={`tab-pane fade ${
+                    index === 0 ? "show active" : ""
+                  }`}
+                  id={`pane-${index}`}
+                  role="tabpanel"
+                  aria-labelledby={`tab-${index}`}
+                >
+                  <div className="container">
                     <div className="row">
-                      <div className="col-12">
-                        <div className="d-flex justify-content-center">
-                          <h5 className={gridStyles.more}>
-                            <Link href="#"> مشاهده بیشتر </Link>
-                          </h5>
+                      {products.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="col-12 col-lg-6 col-xl-3 d-flex justify-content-center justify-content-lg-start"
+                        >
+                          <div className={gridStyles.brandCart}>
+                            <div className={gridStyles.brandCartOverlay}>
+                              <div className={gridStyles.brandCartOverlayIcons}>
+                                <Link href="#">
+                                  <i className="bi bi-heart"></i>
+                                </Link>
+                                <Link href="#">
+                                  <i className="bi biCart3"></i>
+                                </Link>
+                              </div>
+                            </div>
+                            {item.special_offer && (
+                              <div className={gridStyles.brandCartOffSign}>
+                                <span>فروش ویژه</span>
+                              </div>
+                            )}
+                            <Image
+                              src={item.image_urls[0]}
+                              alt={item.title}
+                              width={301}
+                              height={261}
+                            />
+                            <div className={gridStyles.brandCartDetail}>
+                              <div className={gridStyles.brandCartFirstTitle}>
+                                <h4 className={gridStyles.brandCartTitle}>
+                                  {item.title}
+                                </h4>
+                              </div>
+                              <div className={gridStyles.brandCartRankingStar}>
+                                <i className="bi bi-star-fill"></i>
+                                <i className="bi bi-star-fill"></i>
+                                <i className="bi bi-star-fill"></i>
+                                <i className="bi bi-star-fill"></i>
+                                <i className="bi bi-star"></i>
+                              </div>
+                              {/* <div
+                                className={gridStyles.brandCartFirstOffPercent}
+                              >
+                                <span className={gridStyles.brandCartPrice}>
+                                  {item.price}
+                                </span>
+                                <span className={gridStyles.brandCartRealPrice}>
+                                  {item.real_price}
+                                </span>
+                                <span
+                                  className={gridStyles.brandCartOffPercent}
+                                >
+                                  {item.discount}
+                                </span>
+                              </div> */}
+
+                              <div
+                                className={gridStyles.brandCartFirstOffPercent}
+                              >
+        
+                                {item.discount &&
+                                String(item.discount).replace("%", "").trim() !=
+                                  "0" ? (
+                                  // --- حالت 1: محصول تخفیف دارد ---
+                                  <>
+                                    {/* قیمت نهایی (با تخفیف) */}
+                                    <span className={gridStyles.brandCartPrice}>
+                                      {item.price}
+                                    </span>
+                                    {/* قیمت اصلی محصول (معمولاً خط خورده نمایش داده می‌شود) */}
+                                    <span
+                                      className={gridStyles.brandCartRealPrice}
+                                    >
+                                      {item.real_price}
+                                    </span>
+                                    {/* متن یا مقدار تخفیف */}
+                                    <span
+                                      className={gridStyles.brandCartOffPercent}
+                                    >
+                                      {item.discount}
+                                    </span>
+                                  </>
+                                ) : (
+                                  // --- حالت 2: محصول تخفیف ندارد (یا تخفیف صفر است) ---
+                                  // فقط قیمت واقعی محصول به عنوان قیمت اصلی نمایش داده می‌شود
+                                  <span className={gridStyles.brandCartPrice}>
+                                    {item.real_price}
+                                  </span>
+                                )}
+                              </div>
+
+
+
+
+
+
+                              <button className="btn btn-dark">
+                                <Link href="#">
+                                  <i className="bi bi-arrow-left-short text-white"></i>
+                                </Link>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {products.length > 0 && (
+                      <div className="row">
+                        <div className="col-12">
+                          <div className="d-flex justify-content-center">
+                            <h5 className={gridStyles.more}>
+                              <Link href="#"> مشاهده بیشتر </Link>
+                            </h5>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default Brands
+export default Brands;

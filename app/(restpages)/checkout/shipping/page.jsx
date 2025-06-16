@@ -12,34 +12,42 @@ import Link from "next/link";
 const Address = () => {
   const router = useRouter();
    const {
-     
+     addresses,
      calculateShippingPrice,
      discountValue,
    } = useContext(ProductContext);
 
-const {cartItems, removeFromCart} = useCartContext();
+const {cartItems, removeFromCart, isCartLoading} = useCartContext();
 
+const [selectedShippingPrice, setSelectedShippingPrice] = useState(0);
+    // useEffect(() => {
+    //   if (cartItems.length === 0) {
+    //     router.push("/checkout/cart");
+    //   }
+    // }, [cartItems, router]);
+   useEffect(() => {
 
-    useEffect(() => {
-      if (cartItems.length === 0) {
-        router.push("/checkout/cart");
-      }
-    }, [cartItems, router]);
-   const [selectedShippingPrice, setSelectedShippingPrice] = useState(0);
+    if (isCartLoading) return;
+
+     if (Array.isArray(cartItems) && cartItems.length === 0) {
+       router.push("/checkout/cart");
+     }
+   }, [cartItems,isCartLoading, router]);
+
 
 
    const handleSelectAddress = (province) => {
-    console.log(
-      "Address Page: handleSelectAddress called with province:",
-      province
-    );
+   
      const shippingPrice = calculateShippingPrice(province);
-     console.log("Address Page: Calculated shipping price:", shippingPrice);
+
      setSelectedShippingPrice(shippingPrice);
    };
   return (
     <div>
-      <AddressTable onAddressSelect={handleSelectAddress} isShippingPage={true} />
+      <AddressTable
+        onAddressSelect={handleSelectAddress}
+        isShippingPage={true}
+      />
       <div className="container">
         <div className="row">
           <div className="col-12 col-xl-6">
@@ -79,9 +87,10 @@ const {cartItems, removeFromCart} = useCartContext();
             <SummaryBox
               shippingPrice={selectedShippingPrice}
               discountValue={discountValue}
+              nextStep="/checkout/payment"
+              step="redirect"
             />
           </div>
-          <Link href="/profile/addresses">go to profile</Link>
         </div>
       </div>
     </div>

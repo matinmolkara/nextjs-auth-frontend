@@ -3,26 +3,20 @@ import React, {useState, useContext, useEffect} from 'react';
 import { ProductContext } from '@/context/ProductContext';
 
 const AddressModal = ({ onSave, initialData = null }) => {
-  const {
-    provinces,
-    cities,
-    selectedAddress,
-    setSelectedAddress,
-    isEditMode,
-    setIsEditMode,
-  } = useContext(ProductContext);
+  const { provinces, cities } =
+    useContext(ProductContext);
 
   const [filteredCities, setFilteredCities] = useState([]);
   const [newAddress, setNewAddress] = useState(
-    initialData || {
+     {
       reciever: "",
-      province: "",
-      city: "",
-      fullAddress: "",
+      province_id: "",
+      city_id: "",
+      full_address: "",
 
-      buildingNum: "",
-      unitNum: "",
-      zipCode: "",
+      building_num: "",
+      unit_num: "",
+      zip_code: "",
       tel: "",
     }
   );
@@ -30,76 +24,99 @@ const AddressModal = ({ onSave, initialData = null }) => {
   // مقداردهی اولیه هنگام ویرایش
   useEffect(() => {
     if (initialData) {
-      setNewAddress(initialData);
-      const selectedProvince = provinces.find(
-        (p) => p.name === initialData.province
+      // const provinceId = provinces.find(
+      //   (p) => p.name === initialData.province
+      // )?.id;
+      const filtered = cities.filter(
+        (city) => city.province_id === initialData.province_id
       );
-      if (selectedProvince) {
-        setFilteredCities(
-          cities.filter((city) => city.province_id === selectedProvince.id)
-        );
-      }
+      setFilteredCities(filtered);
+      setNewAddress(initialData);
     }
-  }, [initialData, provinces, cities]);
+  }, [initialData, cities]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const sanitizedValue = value.replace(/[^0-9]/g, "");
-     if (Number(value) < 0) return;
-    setNewAddress((prev) => ({ ...prev, [name]: value }));
+     setNewAddress((prev) => ({
+       ...prev,
+       [name]: name === "province_id" || name === "city_id" ? +value : value,
+     }));
   };
 const handleKeyDown = (e) => {
   if (["-", "+", ".", "e"].includes(e.key)) {
     e.preventDefault(); // جلوگیری از ورود کاراکترهای نامطلوب
   }
 };
-  const handleProvinceChange = (province_id) => {
-    const provinceName =
-      provinces.find((p) => p.id === +province_id)?.name || "";
-    setNewAddress((prev) => ({ ...prev, province: provinceName, city: "" }));
-    setFilteredCities(cities.filter((city) => city.province_id === +province_id));
-  };
+ 
 
-  const handleSave = () => {
-    // اعتبارسنجی برای جلوگیری از اضافه شدن آدرس خالی
-    if (
-      !newAddress.reciever ||
-      !newAddress.tel ||
-      !newAddress.province ||
-      !newAddress.city ||
-      !newAddress.fullAddress
-    ) {
-      alert("لطفاً تمام فیلدهای ضروری را پر کنید.");
-      return;
-    }
-    onSave(newAddress);
 
-    // نمایش پیام موفقیت
+const handleProvinceChange = (e) => {
+  const province_id = +e.target.value;
+  const filtered = cities.filter((city) => city.province_id === province_id);
+  setFilteredCities(filtered);
+  setNewAddress((prev) => ({
+    ...prev,
+    province_id,
+    city_id: "",
+  }));
+};
+
+
+
+const handleSave = async () => {
+  const {
+    reciever,
+    province_id,
+    city_id,
+    full_address,
+    building_num,
+    zip_code,
+    tel,
+  } = newAddress;
+
+  if (
+    !reciever ||
+    !tel ||
+    !province_id ||
+    !city_id ||
+    !full_address ||
+    !building_num ||
+    !zip_code
+  ) {
+    alert("لطفاً تمام فیلدهای ضروری را پر کنید.");
+    return;
+  }
+
+  try {
+    const savedAddress = await onSave(newAddress);
+    if (!savedAddress?.id) throw new Error("آدرس ذخیره شده id ندارد");
+
     setSuccessMessage(
       initialData ? "آدرس با موفقیت ویرایش شد." : "آدرس جدید با موفقیت ثبت شد."
     );
 
-    // بستن مودال پس از ذخیره
     const modal = document.getElementById("addressModal");
     const modalInstance = window.bootstrap.Modal.getInstance(modal);
     modalInstance.hide();
 
-    // پاک کردن پیام موفقیت پس از 3 ثانیه
     setTimeout(() => setSuccessMessage(""), 3000);
-
-    // بازنشانی فرم
 
     setNewAddress({
       reciever: "",
-      province: "",
-      city: "",
-      fullAddress: "",
-      buildingNum: "",
-      unitNum: "",
-      zipCode: "",
+      province_id: "",
+      city_id: "",
+      full_address: "",
+      building_num: "",
+      unit_num: "",
+      zip_code: "",
       tel: "",
     });
-  };
+  } catch (error) {
+    console.error("خطا در ذخیره آدرس:", error);
+    alert("خطا در ذخیره آدرس. لطفاً دوباره تلاش کنید.");
+  }
+};
+
 
   return (
     <div
@@ -176,18 +193,13 @@ const handleKeyDown = (e) => {
                   <select
                     id="inputState"
                     className="form-control"
-                    name="province"
-                    value={newAddress.province}
-                    onChange={(e) => {
-                      handleProvinceChange(
-                        provinces.find((p) => p.name === e.target.value)?.id
-                      ); // یافتن آیدی استان
-                      handleChange(e); // همزمان مقدار را در newAddress ذخیره می‌کند
-                    }}
+                    name="province_id"
+                    value={newAddress.province_id}
+                    onChange={ handleProvinceChange}
                   >
                     <option value="">انتخاب کنید</option>
                     {provinces.map((province) => (
-                      <option key={province.id} value={province.name}>
+                      <option key={province.id} value={province.id}>
                         {province.name}
                       </option>
                     ))}
@@ -204,13 +216,13 @@ const handleKeyDown = (e) => {
                   <select
                     id="inputcity"
                     className="form-control"
-                    name="city"
-                    value={newAddress.city}
+                    name="city_id"
+                    value={newAddress.city_id}
                     onChange={handleChange}
                   >
                     <option value="">انتخاب کنید</option>
                     {filteredCities.map((city) => (
-                      <option key={city.id} value={city.name}>
+                      <option key={city.id} value={city.id}>
                         {city.name}
                       </option>
                     ))}
@@ -229,8 +241,8 @@ const handleKeyDown = (e) => {
                     type="text"
                     className="form-control"
                     id="addRecv"
-                    name="fullAddress"
-                    value={newAddress.fullAddress}
+                    name="full_address"
+                    value={newAddress.full_address}
                     aria-describedby="addHelp"
                     onChange={handleChange}
                   />
@@ -247,8 +259,8 @@ const handleKeyDown = (e) => {
                     type="number"
                     className="form-control"
                     id="plukRecv"
-                    name="buildingNum"
-                    value={newAddress.buildingNum}
+                    name="building_num"
+                    value={newAddress.building_num}
                     onChange={handleChange}
                     onKeyDown={handleKeyDown}
                   />
@@ -259,8 +271,8 @@ const handleKeyDown = (e) => {
                     type="number"
                     className="form-control"
                     id="unitRecv"
-                    name="unitNum"
-                    value={newAddress.unitNum}
+                    name="unit_num"
+                    value={newAddress.unit_num}
                     onChange={handleChange}
                     onKeyDown={handleKeyDown}
                   />
@@ -277,8 +289,8 @@ const handleKeyDown = (e) => {
                     type="number"
                     className="form-control"
                     id="postRecv"
-                    name="zipCode"
-                    value={newAddress.zipCode}
+                    name="zip_code"
+                    value={newAddress.zip_code}
                     onChange={handleChange}
                     onKeyDown={handleKeyDown}
                   />

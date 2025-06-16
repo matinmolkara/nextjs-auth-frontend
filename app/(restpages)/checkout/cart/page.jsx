@@ -34,7 +34,12 @@ const {cartItems} = useCartContext();
             <DiscountSection />
           </div>
           <div className="col-6 d-flex justify-content-end">
-            <SummaryBox shippingPrice={0}  discountValue={discountValue} />
+            <SummaryBox
+              shippingPrice={0}
+              discountValue={discountValue}
+              nextStep="/checkout/shipping"
+              step="redirect"
+            />
           </div>
         </div>
       </div>

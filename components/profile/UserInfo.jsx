@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 const UserInfo = ({user}) => {
-      
+     
   return (
     <div className="mb-4">
       <div className="row">

@@ -22,12 +22,10 @@ const CartTable = () => {
                 </tr>
               </thead>
               <tbody>
-                
                 {cartItems.map((item) => (
-                  <CartItem key={item.product_id} product={item} />
+                  <CartItem key={item.id} product={item} />
                 ))}
               </tbody>
-              
             </table>
           </div>
         </div>

@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-
+import { mergeGuestCart } from "@/app/api/api";
 
 export const AuthContext = createContext();
 
@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true,
       });
       setUser(res.data);
+ 
     } catch {
       setUser(null);
     }
@@ -25,20 +26,31 @@ export const AuthProvider = ({ children }) => {
     try {
       await axios.post(
         "http://localhost:5000/api/auth/login",
-        { email, password },
+        {
+          email,
+          password,
+        },
         { withCredentials: true }
       );
-      localStorage.removeItem("guestCart"); // پاکسازی سبد خرید مهمان بعد از ورود
-      await fetchUser();
 
-      router.push("/");
+      const guestCart = localStorage.getItem("guestCart");
+      if (guestCart) {
+        const parsed = JSON.parse(guestCart);
+        if (parsed.length > 0) {
+          await mergeGuestCart(parsed);
+        }
+        localStorage.removeItem("guestCart");
+      }
+
+      const userData = await fetchUser(); // 👈 نتیجه fetchUser را برگردان
+      return userData; // ✅ کاربر برگشت داده میشه
     } catch (error) {
       console.error("Login failed:", error);
-      // Handle login error, e.g., set an error state
-      alert("ورود ناموفق. لطفاً ایمیل و رمز عبور را بررسی کنید.");
+      throw error;
     }
   };
-
+  
+  
   const logout = async () => {
     try {
       await axios.post(
@@ -63,7 +75,8 @@ export const AuthProvider = ({ children }) => {
         password,
         name,
       });
-      await login(email, password);
+      // await login(email, password);
+      router.push(`/users/checkmail?email=${email}`);
     } catch (error) {
       console.error("Registration failed:", error);
       // Handle registration error, e.g., set an error state
@@ -77,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, register, isAuthenticated: !!user }}
+      value={{ user, login, logout, register,fetchUser , isAuthenticated: !!user }}
     >
       {children}
     </AuthContext.Provider>

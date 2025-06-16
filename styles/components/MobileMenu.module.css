@@ -1,0 +1,73 @@
+.mobileMenu {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 70%;
+    height: 100vh;
+    z-index: 1000;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.15);
+    /* سفیدی نیمه شفاف */
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.mobileMenu::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('/images/sidebar/sidebarbackground.jpg') no-repeat center center / cover;
+    opacity: 0.2;
+    /* میزان شفافیت عکس */
+    z-index: -1;
+    /* پشت محتوای منو */
+}
+
+.mobileMenu.active {
+    display: block;
+    transform: translateX(0);
+}
+
+.menuList {
+    list-style: none;
+    padding: 0;
+}
+
+.menuItem {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+}
+.menuItem:nth-child(odd){
+    /* background-color:aliceblue; */
+}
+.menuLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.menuLabel a{
+    color: var(--forth-color);
+    text-shadow: #e0e0e0 1px 1px 0;
+}
+.hamburger {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+}
+.menuContent{
+    /* background-color: var(--light-color); */
+}
+.menuContent > a{
+display: block;
+padding: 15px;
+color: var(--second-color);
+}
+.menuContent>a > i{
+    color: var(--second-color);
+    margin-left: 10px;
+}

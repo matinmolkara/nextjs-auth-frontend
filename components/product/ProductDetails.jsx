@@ -2,20 +2,14 @@ import React from 'react'
 import styles from "../../styles/components/ProductGrid.module.css";
 import Link from 'next/link';
 
-const ProductDetails = ({comments,product}) => {
-  console.log("DETAILS: Received product prop:", product); // <-- لاگ prop دریافتی
+const ProductDetails = ({comments,product,productAttributes}) => {
+ 
   // اضافه کردن مقدار پیش‌فرض برای جلوگیری از خطا هنگام دسترسی به پراپرتی‌های product اگر null باشد
   const safeProduct = product || {};
 
   const { title, price, real_price } = safeProduct; // price اینجا number است, real_price رشته است
 
-  console.log("DETAILS: Product price:", price, "Type:", typeof price);
-  console.log(
-    "DETAILS: Product real_price:",
-    real_price,
-    "Type:",
-    typeof real_price
-  );
+
 
   const formatPrice = (priceInput) => {
     // تبدیل ورودی به عدد قبل از بررسی نوع (برای مدیریت رشته‌های عددی مثل real_price)
@@ -95,18 +89,12 @@ const ProductDetails = ({comments,product}) => {
         </div>
         <div className="product-detail-shop-property">
           <ul>
-            <li>
-              <span> موجودی: </span>
-              <span> موجود </span>
-            </li>
-            <li>
-              <span> جنس: </span>
-              <span> پارچه ای </span>
-            </li>
-            <li>
-              <span> مناسب برای: </span>
-              <span> پیاده روی </span>
-            </li>
+            {productAttributes?.slice(0, 3).map((attr) => (
+              <li key={attr.id}>
+                <span>{attr.name}:</span>
+                <span>{attr.value}</span>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

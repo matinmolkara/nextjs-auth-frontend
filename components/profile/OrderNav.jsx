@@ -34,7 +34,7 @@ const OrderNav = () => {
                   alt="img"
                   width="50"
                   height="50"
-                  src="/images/order/all-orders.svg"
+                  src="/images/order/delivered.svg"
                 />
                 تحویل داده شده
               </Link>
@@ -45,7 +45,7 @@ const OrderNav = () => {
                   alt="img"
                   width="50"
                   height="50"
-                  src="/images/order/all-orders.svg"
+                  src="/images/order/canceled.svg"
                 />
                 لغو شده
               </Link>
@@ -72,7 +72,7 @@ const OrderNav = () => {
                   alt="img"
                   width="50"
                   height="50"
-                  src="/images/order/all-orders.svg"
+                  src="/images/order/inprocess.svg"
                 />
                 در دست بررسی
               </Link>

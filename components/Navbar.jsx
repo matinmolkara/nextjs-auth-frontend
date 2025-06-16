@@ -38,7 +38,9 @@ const Navbar = () => {
       try {
         // آدرس API شما برای دریافت همه دسته‌بندی‌ها
         // مطمئن شوید که این آدرس صحیح است
-        const res = await fetch("http://localhost:5000/api/categories"); // مثال: فرض کنید API شما در مسیر /api/categories قرار دارد
+        const res = await fetch(
+          "http://localhost:5000/api/categories?all=true"
+        ); // مثال: فرض کنید API شما در مسیر /api/categories قرار دارد
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
@@ -46,7 +48,7 @@ const Navbar = () => {
 
         // تبدیل لیست تخت به ساختار درختی
         // فرض می کنیم دسته‌بندی‌های سطح بالا parent_id برابر null دارند
-        const nestedCategories = buildCategoryTree(data);
+        const nestedCategories = buildCategoryTree(data.categories || []);
         setCategories(nestedCategories);
         setLoading(false);
       } catch (err) {

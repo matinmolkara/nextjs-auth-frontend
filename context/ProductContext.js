@@ -1,7 +1,7 @@
-// context/ProductContext.js
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
+import { useAuth } from "@/context/authContext";
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import {
   getProducts,
@@ -15,136 +15,191 @@ import {
   getCities,
   getProvinces,
   getUserOrders,
-} from "../app/api/api"; // ایجاد api.js
-// ایجاد context
+  createAddressApi,
+  updateAddressApi,
+  deleteAddressApi,
+  setDefaultAddressApi,
+  getProductGeneralDescriptions,
+  getProductAttributes,
+  getCategoryAttributes,
+} from "../app/api/api";
+
 export const ProductContext = createContext();
 
-// کامپوننت provider
 export const ProductProvider = ({ children }) => {
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filters, setFilters] = useState({
+    categoryId: null,
+    brand: null,
+    available: false, // یعنی inventory > 0
+    specialOffer: false, // به جای discount
+    bestSeller: false,
+  });
+  
+
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [colors, setColors] = useState([]);
   const [sizes, setSizes] = useState([]);
-
-  const [productImages, setProductImages] = useState([]);
   const [productColors, setProductColors] = useState([]);
   const [productSizes, setProductSizes] = useState([]);
+  const [productAttributes, setProductAttributes] = useState([]);
+  const [productDescriptions, setProductDescriptions] = useState([]);
 
   const [addresses, setAddressess] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
   const [shippingRates, setShippingRates] = useState({});
-
-  const [orders, setOrders] = useState([]); // State for orders
+  const [orders, setOrders] = useState([]);
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [discountValue, setDiscountValue] = useState(0);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [comments, setComments] = useState([]);
 
   const pathname = usePathname();
-  const searchParams = useSearchParams(); // استفاده از useSearchParams در Provider
+  const searchParams = useSearchParams();
 
-  // تعریف تابع fetchProducts که می‌تواند فیلترها را بپذیرد
-  // از useCallback استفاده می‌کنیم تا از بازآفرینی غیرضروری تابع جلوگیری شود
   const fetchProducts = useCallback(async (filters = {}) => {
     try {
-      console.log("CONTEXT: Fetching products with filters:", filters);
-      // فرض می‌کنیم تابع getProducts در api.js می‌تواند یک آبجکت فیلتر بپذیرد
-      // شما نیاز دارید این تابع را در api.js به‌روزرسانی کنید تا پارامتر filters را مدیریت کند
-      const productsData = ((await getProducts(filters)) || []).map((p) => ({
+      const response = await getProducts(filters);
+      const productsData = (response.products || []).map((p) => ({
         ...p,
-        // تبدیل قیمت به عدد، در صورت ناموفق بودن 0 در نظر بگیر
         price: parseFloat(p.price) || 0,
       }));
-
-      console.log("CONTEXT: Fetched productsData:", productsData);
       setProducts(productsData);
-      setFilteredProducts(productsData); // مقداردهی اولیه filteredProducts با داده‌های فیلتر شده
+      setFilteredProducts(productsData);
+     
+
     } catch (error) {
-      console.error("CONTEXT: Error fetching products:", error);
-      setProducts([]); // در صورت خطا لیست محصولات را خالی کن
+      setProducts([]);
       setFilteredProducts([]);
     }
-  }, []); // آرایه وابستگی خالی به معنای اینکه تابع یک بار تعریف می‌شود
+  }, []);
 
   useEffect(() => {
-    async function fetchInitialData() {
-      // دریافت محصولات بدون فیلتر در بارگذاری اولیه Context
-      // اگر می‌خواهید در بارگذاری اولیه هم بر اساس URL فیلتر شود،
-      // می‌توانید categoryId را اینجا از searchParams بگیرید و به fetchProducts بفرستید.
-      // اما معمولاً فیلترینگ URL در صفحه خاص (ProductList) انجام می‌شود.
-      fetchProducts({}); // دریافت همه محصولات در بارگذاری اولیه Context
+    const categoryId = searchParams.get("categoryId");
+    const brand = searchParams.get("brand");
+    const inventory = searchParams.get("inventory"); // جدید
+    const specialOffer = searchParams.get("special_offer"); // جدید
+    const bestSeller = searchParams.get("bestSeller");
 
-      // دریافت سایر داده‌ها که به فیلتر محصولات بستگی ندارند
+    const urlFilters = {
+      categoryId: categoryId || null,
+      brand: brand || null,
+      available: inventory === "1", // یعنی فقط محصولاتی که inventory > 0
+      specialOffer: specialOffer === "true", // یعنی فقط special_offer=true
+      bestSeller: bestSeller === "true",
+    };
+
+    setFilters(urlFilters);
+    fetchProducts(urlFilters);
+  }, [searchParams, fetchProducts]);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
       try {
-        const brandsData = await getBrands();
-        setBrands(brandsData);
-        const categoriesData = await getCategories();
-        setCategories(categoriesData);
+        const brandsData = await getBrands({ pageSize: 1000 });
+        setBrands(brandsData.brands || []);
+
+        const categoriesResponse = await getCategories({ pageSize: 1000 });
+        setCategories(categoriesResponse.categories || []);
+
         const colorsData = await getColors();
         setColors(colorsData);
         const sizesData = await getSizes();
         setSizes(sizesData);
       } catch (error) {
-        console.error(
-          "CONTEXT: Error fetching initial supporting data:",
-          error
-        );
+        console.error("Error fetching initial data:", error);
       }
-    }
+    };
     fetchInitialData();
-    // fetchProducts را به عنوان dependency اضافه نمی‌کنیم چون از useCallback استفاده شده با آرایه خالی
-  }, [fetchProducts]); // fetchProducts به عنوان dependency اضافه می‌شود چون useCallback استفاده شده.
+  }, []);
 
-  // useEffect برای دریافت رنگ‌های محصول (فرض می‌شود برای صفحه جزئیات محصول استفاده می‌شود)
+  
+  const handleFilterChange = useCallback(
+    (filterName, value) => {
+      setFilters((prev) => {
+        const newFilters = { ...prev, [filterName]: value };
+        const queryParams = new URLSearchParams();
+
+        if (newFilters.categoryId)
+          queryParams.append("categoryId", newFilters.categoryId);
+        if (newFilters.brand) queryParams.append("brand", newFilters.brand);
+        if (newFilters.available) queryParams.append("inventory", "1"); // به جای available
+        if (newFilters.specialOffer)
+          queryParams.append("special_offer", "true"); // به جای discount
+        if (newFilters.bestSeller) queryParams.append("bestSeller", "true");
+
+        const url = `/products?${queryParams.toString()}`;
+        window.history.replaceState(null, "", url);
+      
+
+        fetchProducts(newFilters);
+        return newFilters;
+      });
+    },
+    [fetchProducts]
+  );
+  // مدیریت رنگ و سایز محصول
   useEffect(() => {
     const pathParts = pathname.split("/");
     const productId = pathParts[pathParts.length - 1];
-    console.log(`📦 دریافت رنگ‌های محصول برای ID: ${productId}`);
     if (!productId || isNaN(Number(productId))) {
-      setProductColors([]); // اگر ID نامعتبر است، رنگ‌ها را خالی کن
-      return; // جلوگیری از ارسال درخواست نامعتبر
+      setProductColors([]);
+      setProductSizes([]);
+      return;
     }
-    async function fetchColors() {
+    async function fetchColorsAndSizes() {
       try {
-        const productColorsData = await getProductColors(productId);
-        console.log(
-          `🎨 رنگ‌های دریافت‌شده برای محصول ${productId}:`,
-          productColorsData
-        );
-        setProductColors(productColorsData);
+        const [colors, sizes] = await Promise.all([
+          getProductColors(productId),
+          getProductSizes(productId),
+        ]);
+        setProductColors(colors);
+        setProductSizes(sizes);
       } catch (error) {
-        console.error("❌ خطا در دریافت رنگ‌های محصول:", error);
+        console.error("Error fetching colors/sizes:", error);
         setProductColors([]);
-      }
-    }
-    fetchColors();
-  }, [pathname]); // وابسته به pathname
-
-  // useEffect برای دریافت سایزهای محصول (فرض می‌شود برای صفحه جزئیات محصول استفاده می‌شود)
-  useEffect(() => {
-    const pathParts = pathname.split("/");
-    const productId = pathParts[pathParts.length - 1];
-    console.log(`📦 دریافت سایزهای محصول برای ID: ${productId}`);
-    if (!productId || isNaN(Number(productId))) {
-      setProductSizes([]); // اگر ID نامعتبر است، سایزها را خالی کن
-      return; // جلوگیری از ارسال درخواست نامعتبر
-    }
-    async function fetchSizes() {
-      try {
-        const productSizesData = await getProductSizes(productId);
-        console.log(
-          `🎨 سایزهای دریافت‌شده برای محصول ${productId}:`,
-          productSizesData
-        );
-        setProductSizes(productSizesData);
-      } catch (error) {
-        console.error("❌ خطا در دریافت سایزهای محصول:", error);
         setProductSizes([]);
       }
     }
-    fetchSizes();
-  }, [pathname]); // وابسته به pathname
+    fetchColorsAndSizes();
+  }, [pathname]);
+
+  // مدیریت ویژگی‌ها و توضیحات
+  useEffect(() => {
+    const pathParts = pathname.split("/");
+    const productId = pathParts[pathParts.length - 1];
+    if (!productId || isNaN(Number(productId))) return;
+
+    async function fetchProductDetails() {
+      try {
+        const [attributes, descriptions] = await Promise.all([
+          getProductAttributes(productId),
+          getProductGeneralDescriptions(productId),
+        ]);
+        setProductAttributes(attributes);
+        setProductDescriptions(descriptions);
+      } catch (error) {
+        console.error("Error fetching attributes/descriptions:", error);
+      }
+    }
+    fetchProductDetails();
+  }, [pathname]);
+
+  // مدیریت آدرس، استان، شهر
   useEffect(() => {
     const fetchData = async () => {
+      if (!user) {
+        setAddressess([]);
+        setProvinces([]);
+        setCities([]);
+        return;
+      }
       const [addrRes, provRes, cityRes] = await Promise.all([
         getAddresses(),
         getProvinces(),
@@ -154,7 +209,6 @@ export const ProductProvider = ({ children }) => {
       setProvinces(provRes);
       setCities(cityRes);
 
-      // ساخت map از هزینه‌های ارسال
       const rates = {};
       for (const province of provRes) {
         rates[province.name] = province.shipping_price;
@@ -162,137 +216,90 @@ export const ProductProvider = ({ children }) => {
       setShippingRates(rates);
     };
     fetchData();
-  }, []);
+  }, [user]);
 
-  // پیدا کردن محصول انتخاب‌شده بر اساس شناسه
-  const getProductById = useCallback(
-    (id) => {
-      if (!products.length) return null;
-      // از find استفاده می‌کنیم و id را به عدد تبدیل می‌کنیم
-      return (
-        products.find((product) => product.id === parseInt(id, 10)) || null
+  const setDefaultAddress = async (addressId) => {
+    try {
+      await setDefaultAddressApi(addressId);
+      setAddressess((prev) =>
+        prev.map((addr) =>
+          addr.id === addressId
+            ? { ...addr, is_default: true }
+            : { ...addr, is_default: false }
+        )
       );
-    },
-    [products]
-  ); // وابسته به products
+    } catch (error) {
+      console.error("Error setting default address:", error);
+    }
+  };
 
-  const handleFilterChange = useCallback(
-    (sortOption) => {
-      let sortedProducts = [...products]; // مرتب‌سازی همیشه بر اساس لیست کامل products انجام شود
-      if (sortOption === "price") {
-        sortedProducts.sort(
-          (a, b) => parseFloat(a.price) - parseFloat(b.price)
-        );
-      } else if (sortOption === "newest") {
-        // فرض تاریخ اضافه‌شدن: نیاز به فیلد dateAdded در داده محصولات
-        sortedProducts.sort(
-          (a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)
-        );
-      } else if (sortOption === "bestseller") {
-        // فرض تعداد فروش: نیاز به فیلد sales در داده محصولات
-        sortedProducts.sort((a, b) => b.sales - a.sales);
-      }
-      setFilteredProducts(sortedProducts);
-    },
-    [products] // وابسته به products تا زمانی که لیست محصولات تغییر کند تابع به‌روز شود
-  );
+  const addOrUpdateAddress = async (address, isEdit = false) => {
+    try {
+      const response = isEdit
+        ? await updateAddressApi(address.id, address)
+        : await createAddressApi(address);
+      setAddressess((prev) =>
+        isEdit
+          ? prev.map((addr) => (addr.id === address.id ? response : addr))
+          : [...prev, response]
+      );
+      return response;
+    } catch (error) {
+      console.error("Error adding/updating address:", error);
+    }
+  };
 
-  const [comments, setComments] = useState([
-    {
-      user: "زهرا ملک آرا",
-      date: "14 آبان 1403",
-      rating: 3,
-      text: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ.",
-      response: null,
-    },
-    {
-      user: "زهرا ملک آرا",
-      date: "14 آبان 1403",
-      rating: 4,
-      text: "لورم ایپسوم متن ساختگی با تولید سادگی.",
-      response: "با تشکر از ثبت نظر بله این کالا موجود هست.",
-    },
-  ]);
+  const deleteAddress = async (addressId) => {
+    try {
+      await deleteAddressApi(addressId);
+      setAddressess((prev) => prev.filter((addr) => addr.id !== addressId));
+    } catch (error) {
+      console.error("Error deleting address:", error);
+    }
+  };
 
-  const [relatedProducts, setRelatedProducts] = useState([
-    {
-      id: 1,
-      imgSrc: "/images/hero/bestoffer3.png",
-      title: "کفش فوتسال مردانه تن زیب مدل TID9602",
-      price: "1,386,000 تومان",
-      realPrice: "1800,000 تومان",
-      discount: "24%",
-      specialOffer: true,
-    },
-    {
-      id: 2,
-      imgSrc: "/images/brands/1.png",
-      title: "کفش فوتسال مردانه تن زیب مدل TID9602",
-      price: "1,386,000 تومان",
-      realPrice: "1800,000 تومان",
-      discount: "24%",
-      specialOffer: false,
-    },
-    {
-      id: 3,
-      imgSrc: "/images/brands/2.png",
-      title: "کفش فوتسال مردانه تن زیب مدل TID9602",
-      price: "1,386,000 تومان",
-      realPrice: "1800,000 تومان",
-      discount: "24%",
-      specialOffer: true,
-    },
-  ]);
-
-  const calculateShippingPrice = useCallback(
-    (province) => {
-      return shippingRates[province] || 0; // بازگشت مقدار پیش‌فرض در صورت عدم تطابق
-    },
-    [shippingRates]
-  ); // وابسته به shippingRates
-
-  const [discountValue, setDiscountValue] = useState(0);
-  const [selectedAddress, setSelectedAddress] = useState(null); // آدرس انتخاب‌شده برای ویرایش
-  const [isEditMode, setIsEditMode] = useState(false); // حالت افزودن یا ویرایش
-
+  // مدیریت سفارشات
   const fetchUserOrders = useCallback(async () => {
     try {
       const ordersData = await getUserOrders();
-      setOrders(ordersData.data); // Assuming your backend returns data in a 'data' field
+      setOrders(ordersData.data);
     } catch (error) {
-      console.error("CONTEXT: Error fetching user orders:", error);
+      console.error("Error fetching user orders:", error);
       setOrders([]);
     }
   }, []);
 
-  // useEffect(() => {
-  //   // async function fetchInitialData() {
- 
-  //   //   fetchUserOrders();
-  //   // }
-  //   fetchInitialData();
-  //   // ... سایر وابستگی ها ...
-  // }, [fetchProducts, fetchUserOrders]); // Add fetchUserOrders as a dependency
+  useEffect(() => {
+    if (!user) {
+      setOrders([]);
+      return;
+    }
+    fetchUserOrders();
+  }, [user, fetchUserOrders]);
+
+  const calculateShippingPrice = useCallback(
+    (province) => {
+      return shippingRates[province] || 0;
+    },
+    [shippingRates]
+  );
 
   return (
     <ProductContext.Provider
       value={{
         products,
-        getProducts, // <--- Optional: If you need the raw fetch function outside
-        fetchProducts,
-        getProductById,
-        setProducts,
-        productImages,
-        setProductImages,
         filteredProducts,
+        filters,
+        fetchProducts,
         handleFilterChange,
-        relatedProducts,
-        setRelatedProducts,
-        comments,
-        setComments,
+        getProductById: (id) => products.find((p) => p.id === parseInt(id, 10)) || null,
+        setProducts,
+        productImages: [],
+        setProductImages: () => {},
         brands,
         setBrands,
         categories,
+        setCategories,
         sizes,
         colors,
         addresses,
@@ -312,6 +319,19 @@ export const ProductProvider = ({ children }) => {
         setProductSizes,
         orders,
         fetchUserOrders,
+        deleteAddress,
+        setDefaultAddress,
+        addOrUpdateAddress,
+        paymentMethod,
+        setPaymentMethod,
+        productAttributes,
+        setProductAttributes,
+        productDescriptions,
+        setProductDescriptions,
+        comments,
+        setComments,
+        relatedProducts,
+        setRelatedProducts,
       }}
     >
       {children}

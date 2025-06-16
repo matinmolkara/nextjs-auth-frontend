@@ -27,8 +27,16 @@ const Header = () => {
                       await logout();
                     }}
                   >
-                    <Link href="/profile/userinfo">{user.name || user.email}</Link>
-
+                    <Link href="/profile/userinfo"></Link>
+                    <Link
+                      href={
+                        user?.role === "admin"
+                          ? "/admin-panel/dashboard"
+                          : "/profile/userinfo"
+                      }
+                    >
+                      {user.name || user.email}
+                    </Link>
                     <button>خروج</button>
                   </form>
                 ) : (

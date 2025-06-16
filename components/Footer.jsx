@@ -33,7 +33,7 @@ const FooterContact = () => (
               width={16}
               height={16}
             />
-            00905538355909
+          <span dir="ltr" className="text-left" style={{ direction: "ltr !important"}}>+98 936 525 1806</span>
           </Link>
         </li>
         <li>
@@ -44,7 +44,7 @@ const FooterContact = () => (
               width={16}
               height={16}
             />
-            fbi@gmail.com
+            zahramolkara@gmail.com
           </Link>
         </li>
         <li>
@@ -94,28 +94,28 @@ const Footer = () => {
                     <Logo />
                   </div>
                   <p>
-                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ ،
-                    و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه
-                    روزنامه و مجله در ستون و سطرآنچنان که لازم است.
+                    فروشگاه اینترنتی ما با هدف ارائه بهترین تجربه خرید آنلاین
+                    و دسترسی آسان به محصولات با کیفیت راه‌اندازی شده است. ما
+                    متعهد به ارائه خدمات عالی و پشتیبانی مشتری هستیم.
                   </p>
                 </div>
               </div>
               <FooterLinks
                 title="لینک های مفید"
                 links={[
-                  { href: "about.html", label: "درباره ما" },
-                  { href: "plan.html", label: "والمارت" },
-                  { href: "blog.html", label: "نحوه همکاری" },
+                  { href: "/contactus", label: "تماس با ما" },
+                  { href: "/", label: "والمارت" },
+                  { href: "#", label: "نحوه همکاری" },
                   { href: "#", label: "سوالات متداول" },
                 ]}
               />
               <FooterLinks
                 title="حساب کاربری"
                 links={[
-                  { href: "#", label: "پنل کاربری" },
-                  { href: "#", label: "ورود" },
-                  { href: "#", label: "ثبت نام" },
-                  { href: "#", label: "سبد خرید" },
+                  { href: "/profile", label: "پنل کاربری" },
+                  { href: "/users/login", label: "ورود" },
+                  { href: "/users/register", label: "ثبت نام" },
+                  { href: "/checkout/cart", label: "سبد خرید" },
                 ]}
               />
               <FooterContact />

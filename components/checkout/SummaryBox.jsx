@@ -1,11 +1,22 @@
 "use client"
 import React, { useContext,useState } from "react";
 import { useCartContext } from "@/context/cartContext";
-import CheckoutButton from "./CheckoutButton";
+import CheckoutRedirectButton from "./CheckoutRedirectButton";
+import CheckoutSubmitButton from "./CheckoutSubmitButton";
 import styles from "../../styles/components/Cart.module.css";
-const SummaryBox = ({ shippingPrice, discountValue }) => {
-   const { cartItems } = useCartContext(); // دریافت محصولات سبد خرید از Context
-  
+const SummaryBox = ({
+  shippingPrice,
+  discountValue,
+  nextStep = "/checkout/shipping",
+  step = "redirect",
+  paymentMethod,
+  selectedShippingMethod, // روش ارسال انتخابی کاربر
+  orderNotes,
+}) => {
+  const { cartItems, isCartLoading } = useCartContext(); // دریافت محصولات سبد خرید از Context
+
+
+
   const calculateTotal = () => {
     return cartItems.reduce(
       (total, product) => total + product.price * product.quantity,
@@ -19,13 +30,22 @@ const SummaryBox = ({ shippingPrice, discountValue }) => {
     const discountedTotal = total - discountValue; // اعمال تخفیف
     return discountedTotal + tax + (shippingPrice || 0);
   };
- const formatPrice = (price) => {
-   // بررسی مقدار عددی بودن
-   if (typeof price !== "number" || isNaN(price)) {
-     return "0 تومان";
-   }
-   return `${price.toLocaleString("fa-IR")} تومان`;
- };
+  const formatPrice = (price) => {
+    // بررسی مقدار عددی بودن
+    if (typeof price !== "number" || isNaN(price)) {
+      return "0 تومان";
+    }
+    return `${price.toLocaleString("fa-IR")} تومان`;
+  };
+
+  // نمایش وضعیت بارگذاری یا پیام سبد خالی
+  if (isCartLoading) {
+    return <div className={styles.payment}>در حال بارگذاری سبد خرید...</div>;
+  }
+
+  if (!cartItems || cartItems.length === 0) {
+    return <div className={styles.payment}>سبد خرید خالی است.</div>;
+  }
 
   return (
     <div>
@@ -61,7 +81,16 @@ const SummaryBox = ({ shippingPrice, discountValue }) => {
             </span>
             <h4>{formatPrice(calculateFinalPrice())}</h4>
           </div>
-          <CheckoutButton />
+          {step === "submit" ? (
+            <CheckoutSubmitButton
+              paymentMethod={paymentMethod}
+              selectedShippingMethod={selectedShippingMethod} // ارسال پراپ جدید
+              calculatedShippingCost={shippingPrice} // ارسال هزینه ارسال به نام جدید در SubmitButton
+              orderNotes={orderNotes}
+            />
+          ) : (
+            <CheckoutRedirectButton nextStep={nextStep} />
+          )}
         </div>
       </div>
     </div>

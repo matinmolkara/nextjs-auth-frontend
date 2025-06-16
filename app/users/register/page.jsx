@@ -11,6 +11,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <LoginFrame>
@@ -61,14 +62,23 @@ const Register = () => {
           >
             رمز عبور:
           </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={`form-control ${styles.formControl}`}
-            id="inputPassword4"
-            placeholder="انتخاب رمز عبور"
-          />
+          <div className="position-relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`form-control ${styles.formControl}`}
+              id="inputPassword4"
+              placeholder="انتخاب رمز عبور"
+            />
+            <span
+              className="position-absolute top-50 end-0 translate-middle-y me-3"
+              style={{ cursor: "pointer", zIndex: 10 }}
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </span>
+          </div>
         </div>
 
         <div className="col-12 d-flex justify-content-center">

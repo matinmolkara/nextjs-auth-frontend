@@ -12,8 +12,13 @@ import AddToCart from "@/components/product/AddToCart";
 import ProductTabs from "@/components/product/ProductTabs";
 
 const Page = () => {
-  const { products, getProductById, comments, relatedProducts } =
-    useContext(ProductContext);
+  const {
+    products,
+    getProductById,
+    comments,
+    relatedProducts,
+    productAttributes,
+  } = useContext(ProductContext);
   const pathname = usePathname();
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -23,21 +28,16 @@ const Page = () => {
     if (!products.length) return;
     const pathParts = pathname.split("/");
     const productId = pathParts[pathParts.length - 1];
-    console.log("Product ID از URL:", productId);
+   
 
     const foundProduct = getProductById(productId);
-    console.log("PAGE: Found product:", foundProduct); // <-- لاگ محصول پیدا شده
+    
     if (foundProduct) {
-      console.log(
-        "PAGE: Product price:",
-        foundProduct.price,
-        "Type:",
-        typeof foundProduct.price
-      );
+      
       // <-- لاگ قیمت و نوع آن
       setProduct(foundProduct);
     } else {
-      console.log("PAGE: Product not found for ID:", productId);
+     
       setProduct(null); // اطمینان از ریست شدن محصول اگر یافت نشد
     }
   }, [pathname,getProductById,products]);
@@ -53,10 +53,14 @@ const Page = () => {
           <div className="row">
             <div className="col-12 col-lg-5">
               <ProductImages images={product.image_urls} />
-              {console.log(product.image_urls)}
+            
             </div>
             <div className="col-12 col-lg-7">
-              <ProductDetails product={product} comments={comments.length} />
+              <ProductDetails
+                product={product}
+                productAttributes={productAttributes}
+                comments={comments.length}
+              />
               <ProductOptions
                 productId={product.id}
                 onColorSelect={setSelectedColor}

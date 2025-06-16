@@ -2,30 +2,37 @@ import React from "react";
 import styles from "../styles/components/Advertise.module.css";
 import Image from "next/image";
 import Link from "next/link";
-import Shoe from "../public/images/advertise/shoes-shoe-png-transparent-shoe-images-pluspng-17 1.png";
-const Advertise = () => {
+
+const Advertise = ({ banners = [] }) => {
+  if (!banners.length) return null;
+
+  const BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE;
+
   return (
     <div className={styles.advertise}>
-      <div className="container">
-        <div className="row">
-          <div className="col-12 col-xl-6">
-            <div className={styles.advertiseImage}>
-              <Image src={Shoe} alt="shoe advertise" />
-            </div>
+      {banners.map((item, i) => {
+        const imageUrl = item.img.startsWith("http")
+          ? item.img
+          : `${BASE_URL}${item.img}`; // ترکیب دامنه و مسیر
+
+        return (
+          <div key={i} className={styles.advertiseImage}>
+            <Link href={item.href || "#"} passHref>
+              <Image
+                src={imageUrl}
+                alt={`advertise-${i}`}
+                width={800}
+                height={200}
+                unoptimized
+                style={{ width: "100%", height: "auto" }}
+                quality={100}
+              />
+            </Link>
           </div>
-          <div className="col-12 col-xl-6">
-            <div className={styles.advertiseText}>
-              <div className="">
-                <h1>انواع کفش های راحتی مردانه</h1>
-                <p>بهترین برندهای کفش در حراج پاییزه</p>
-                <Link href="#"> خرید کن! </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        );
+      })}
     </div>
   );
-}
+};
 
-export default Advertise
+export default Advertise;

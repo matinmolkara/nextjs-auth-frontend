@@ -7,7 +7,7 @@ import AddressTable from "@/components/shipping/AddressTable";
 import Link from "next/link";
 import EditInfo from "@/components/profile/EditInfo";
 
-const page = () => {
+const Page = () => {
   const { user } = useAuth();
   return (
     <div>
@@ -35,4 +35,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

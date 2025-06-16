@@ -1,138 +1,91 @@
-"use client"
-import React, { useState, useRef, useEffect, useContext } from "react";
+// components/MobileMenu.tsx
+"use client";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { useCartContext } from "@/context/cartContext";
-import styles from "../styles/components/Sidenavigation.module.css";
-import stylesHeader from "../styles/components/Header.module.css";
 import Image from "next/image";
 import Link from "next/link";
+import styles from "../styles/components/MobileMenu.module.css";
+import stylesHeader from "../styles/components/Header.module.css";
 import Icon from "../public/images/Icon.png";
 import Searchz from "../public/images/icon/searchz.png";
-
-const SidebarMenu = () => {
-    const { cartItems } = useCartContext();
-  const menuRef = useRef(null); // برای دسترسی به DOM عنصر منو
-
+const MobileMenu = ({ categories }) => {
+  const { cartItems } = useCartContext();
   const [isActive, setIsActive] = useState(false);
   const [openSubmenus, setOpenSubmenus] = useState({});
+  const menuRef = useRef(null);
 
   const toggleMenu = () => setIsActive(!isActive);
 
-  const toggleSubmenu = (index) => {
-    setOpenSubmenus((prev) => ({ ...prev, [index]: !prev[index] }));
+  const toggleSubmenu = (id) => {
+    setOpenSubmenus((prev) => ({ ...prev, [id]: !prev[id] }));
   };
-
-  const menuData = [
-    {
-      label: "خانه",
-
-      href: "#",
-    },
-    {
-      label: "تماس با ما",
-      icon: "bi bi-people-fill",
-      href: "#",
-    },
-    {
-      label: "کفش",
-
-      submenu: [
-        { label: "اسنیکرز", href: "#" },
-        { label: "راحتی", href: "#" },
-        { label: "مجلسی", href: "#" },
-      ],
-    },
-    {
-      label: "کیف",
-
-      submenu: [
-        { label: "زنانه", href: "#" },
-        { label: "مردانه", href: "#" },
-      ],
-    },
-  ];
 
   const handleClickOutside = (event) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
-      setIsActive(false); // بستن منو
+      setIsActive(false);
     }
   };
+
   useEffect(() => {
-    // اضافه‌کردن لیسنر وقتی کامپوننت رندر شد
-    document.addEventListener("mouseup", handleClickOutside);
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsActive(false);
+      }
+    };
+
+    const handleResize = () => {
+      if (window.innerWidth > 992) {
+        setIsActive(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("resize", handleResize);
+
     return () => {
-      // پاک‌کردن لیسنر وقتی کامپوننت حذف شد
-      document.removeEventListener("mouseup", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
-  return (
-    <div>
-      <div
-        ref={menuRef}
-        className={`${styles.sideNavbar} ${isActive ? styles.isActive : ""}`}
-        id="sidebar"
-      >
-        <div className={styles.sideNavUp}>
-          {["facebook", "instagram", "whatsapp", "telegram"].map((platform) => (
-            <span key={platform}>
-              <Link href="#">
-                <i className={`bi bi-${platform}`}></i>
-              </Link>
-            </span>
-          ))}
-        </div>
-        <div className={styles.sideNavContact}>
-          <ul>
-            {[
-              { class: "phone", text: "021-228804587" },
-              { class: "envelope", text: "wallmart@gmail.com" },
-              { class: "geo-alt", text: "ایران - تهران" },
-            ].map((contact, index) => (
-              <li key={index}>
-                <div className="">
-                  <i className={`bi bi-${contact.class}`}></i>
-                  {contact.text}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+  
 
-        <ul className="nav flex-column text-white w-100">
-          {menuData.map((menuItem, index) => (
-            <li
-              key={index}
-              className={`nav-item ${styles.navItem}`}
-              onClick={() => menuItem.submenu && toggleSubmenu(index)} // کنترل باز/بسته شدن زیرمنو
-            >
-              {menuItem.submenu && (
+  const renderMenu = (items, level = 0) => (
+    <ul className={`${styles.menuList} level-${level}`}>
+      {items.map((item) => (
+        <li key={item.id} className={styles.menuItem}>
+          <div
+            className={styles.menuLabel}
+            onClick={() => toggleSubmenu(item.id)}
+          >
+            {item.children ? (
+              <>
                 <i
                   className={`bi ${
-                    openSubmenus[index] ? "bi-dash" : "bi-plus"
+                    openSubmenus[item.id] ? "bi-dash" : "bi-plus"
                   }`}
-                ></i> // آیکون مثبت/منفی برای زیرمنو
-              )}
+                ></i>
+                {item.name} {/* بدون لینک چون parent هست */}
+              </>
+            ) : (
+              <Link href={`/productlist?categoryId=${item.id}`}>
+                {item.name} {/* فقط برای سطح آخر لینک بشه */}
+              </Link>
+            )}
+          </div>
 
-              {menuItem.label}
+          {item.children &&
+            openSubmenus[item.id] &&
+            renderMenu(item.children, level + 1)}
+        </li>
+      ))}
+    </ul>
+  );
+  
 
-              {menuItem.submenu && (
-                <ul
-                  className={`${styles.submenu} ${
-                    openSubmenus[index] ? styles.open : ""
-                  }`}
-                >
-                  {menuItem.submenu.map((submenuItem, subIndex) => (
-                    <li key={subIndex}>
-                      <Link href="#">{submenuItem.label}</Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="mobileHeader" id="mobileHeader">
-        <div className="container">
+  return (
+    <>
+      <div className="mobile-header" id="mobileHeader">
+      <div className="container">
           <div className="row">
             <div className="col-3">
               <div className={stylesHeader.logo}>
@@ -158,12 +111,8 @@ const SidebarMenu = () => {
                 </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-12">
-                <div className={stylesHeader.borderLine}></div>
-              </div>
-            </div>
-            <div className="row">
+          </div>
+          <div className="row">
               <div className="col-9">
                 <div className={stylesHeader.wrap}>
                   <div className={stylesHeader.search}>
@@ -189,10 +138,25 @@ const SidebarMenu = () => {
               </div>
             </div>
           </div>
+
+        </div>
+
+      <div
+        ref={menuRef}
+        className={`${styles.mobileMenu} ${isActive ? styles.active : ""}`}
+      >
+        <div className={styles.menuContent}>
+          <Link href="/">
+          <i className="bi bi-house"></i>
+          خانه</Link>
+          <Link href="/contactus">
+          <i className="bi bi-telephone"></i>
+          تماس با ما</Link>
+          {renderMenu(categories)}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
-export default SidebarMenu;
+export default MobileMenu;

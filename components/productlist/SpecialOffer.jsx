@@ -1,6 +1,10 @@
-import React from 'react'
+"use client";
+import React, { useContext } from "react";
+import { ProductContext } from "@/context/ProductContext";
 
 const SpecialOffer = () => {
+  const { handleFilterChange, filters } = useContext(ProductContext);
+
   return (
     <div>
       <ul>
@@ -9,13 +13,11 @@ const SpecialOffer = () => {
             <input
               className="form-check-input"
               type="checkbox"
-              role="switch"
-              id="flexSwitchCheckDefault"
+              id="discount-switch"
+              checked={filters.SpecialOffer}
+              onChange={(e) => handleFilterChange("specialOffer", e.target.checked)}
             />
-            <label
-              className="form-check-label"
-              htmlFor="flexSwitchCheckDefault"
-            >
+            <label className="form-check-label" htmlFor="discount-switch">
               دارای تخفیف
             </label>
           </div>
@@ -23,6 +25,6 @@ const SpecialOffer = () => {
       </ul>
     </div>
   );
-}
+};
 
-export default SpecialOffer
+export default SpecialOffer;

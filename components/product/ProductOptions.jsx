@@ -8,11 +8,11 @@ const ProductOptions = ({ onColorSelect, onSizeSelect }) => {
 
   const handleColorChange = (color) => {
     onColorSelect(color);
-    console.log("رنگ انتخاب‌شده:", color);
+   
   };
   const handleSizeChange = (size) => {
     onSizeSelect(size);
-    console.log("سایز انتخاب‌شده:", size);
+
   };
 
 

@@ -1,5 +1,5 @@
   .advertise {
-      background-color: var(--first-color);
+      /* background-color: var(--first-color); */
   }
 
   .advertiseText {
@@ -23,20 +23,17 @@
   }
 
   .advertiseImage {
-      display: flex;
-      justify-content: start;
-      margin-top: -70px;
-      margin-right: -20px;
+      width: 100%;
   }
 
   .advertiseImage img {
-      width: 580px;
-      height: 438px;
+     width: 100%;
+     object-fit: contain;
   }
 
   @media screen and (max-width: 992px) {
       .advertiseImage img {
-          width: 380px;
-        height: 238px;
+          
+        object-fit: contain;
       }
   }

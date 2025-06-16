@@ -8,38 +8,36 @@ import { ProductContext } from "@/context/ProductContext"; // Import ProductCont
 import OrderCart from "@/components/profile/OrderCart"; // Import OrderCart component
 const Page = () => {
   const { orders, fetchUserOrders } = useContext(ProductContext); // Access orders and fetch function
-  const searchParams = useSearchParams();
-  const statusFilter = searchParams.get("status");
-  const [filteredOrders, setFilteredOrders] = useState([]);
   
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status");
+ 
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  useEffect(() => {
+    fetchUserOrders(); // برای گرفتن داده به‌روز
 
-useEffect(() => {
-  // Fetch orders if they are not already loaded
-  if (!orders.length) {
-    fetchUserOrders();
-  }
-}, [orders.length, fetchUserOrders]);
+    // وقتی orders یا status تغییر کنه، لیست فیلتر شده رو تنظیم کن
+  }, [status]); // یا اگر بخوای realtime باشه [orders, status]
 
-useEffect(() => {
-  if (orders) {
-    if (statusFilter) {
-      const filtered = orders.filter(
-        (order) =>
-          order.order_status.toLowerCase() === statusFilter.toLowerCase()
-      );
-      setFilteredOrders(filtered);
-    } else {
-      setFilteredOrders(orders); // Show all orders if no status filter
+  useEffect(() => {
+    if (orders) {
+     
+      if (status) {
+        const filtered = orders.filter(
+          (order) =>
+            typeof order.order_status === "string" &&
+            order.order_status.toLowerCase() === status.toLowerCase()
+        );
+        setFilteredOrders(filtered);
+      } else {
+        setFilteredOrders(orders); // Show all orders if no status filter
+      }
     }
+  }, [orders, status]);
+
+  if (!orders) {
+    return <div>در حال بارگیری سفارشات...</div>;
   }
-}, [orders, statusFilter]);
-
-if (!orders) {
-  return <div>در حال بارگیری سفارشات...</div>;
-}
-
-
-
 
   return (
     <div>
@@ -52,23 +50,21 @@ if (!orders) {
           </div>
           <div className="col-12 col-lg-9">
             <div className={styles.contentArea}>
-              
-                <div className="w-100">
-                  <h5 className="bg-head border-bottom ">سفارشات</h5>
-                  <OrderNav />
-                </div>
-                <div className="w-100">                    
-                      {filteredOrders.length > 0 ? (
-                        <div>
-                          {filteredOrders.map((order) => (
-                            <OrderCart key={order.order_id} order={order} />
-                          ))}
-                        </div>
-                      ) : (
-                        <div>هیچ سفارشی با این وضعیت یافت نشد.</div>
-                      )}
-                </div>
-              
+              <div className="w-100">
+                <h5 className="bg-head border-bottom ">سفارشات</h5>
+                <OrderNav />
+              </div>
+              <div className="w-100">
+                {filteredOrders.length > 0 ? (
+                  <div>
+                    {filteredOrders.map((order) => (
+                      <OrderCart key={order.order_id} order={order} />
+                    ))}
+                  </div>
+                ) : (
+                  <div>هیچ سفارشی با این وضعیت یافت نشد.</div>
+                )}
+              </div>
             </div>
           </div>
         </div>

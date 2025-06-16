@@ -1,56 +1,50 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
+import { getPageBySlug, getProductById } from "@/app/api/api";
 import styles from "../styles/components/Featured.module.css";
 import Image from "next/image";
 import Link from "next/link";
+
 const Featured = () => {
-     const featureItems = [
-       {
-         link: "#",
-         imgSrc: "/images/featured/featured.png",
-         alt: "کفش فوتسال",
-         title: "  کفش فوتسال  مردانه تن زیب مدل TID9602",
-         price: "1,386,000 تومان",
-         realPrice: "1800,000 تومان",
-       },
-       {
-         link: "#",
-         imgSrc: "/images/featured/featured.png",
-         alt: "کفش فوتسال",
-         title: "کفش فوتسال مردانه تن زیب مدل TID9602",
-         price: "1,386,000 تومان",
-         realPrice: "1800,000 تومان",
-       },
-       {
-         link: "#",
-         imgSrc: "/images/featured/featured.png",
-         title: "کفش فوتسال مردانه تن زیب مدل TID9602",
-         alt: "کفش فوتسال",
-         price: "1,386,000 تومان",
-         realPrice: "1800,000 تومان",
-       },
-     ];
-      
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const loadFeatured = async () => {
+      try {
+        const page = await getPageBySlug("home");
+        const ids = page?.data?.content?.bestSellers || [];
+        const fetched = await Promise.all(ids.map((id) => getProductById(id)));
+        const validProducts = fetched.filter((p) => p && p.id);
+        setProducts(validProducts);
+      } catch (err) {
+        console.error("❌ خطا در دریافت پرفروش‌ترین‌ها:", err);
+      }
+    };
+    loadFeatured();
+  }, []);
+
   return (
     <div className={styles.featured}>
       <div className="container">
         <div className="row">
-          {featureItems.map((feature, index) => (
-            <div key={index} className="col-12 col-lg-6 col-xl-4">
-              <Link href={feature.link} className={styles.featuredCardLink}>
+          {products.map((product) => (
+            <div key={product.id} className="col-12 col-lg-6 col-xl-4">
+              <Link
+                href={`/product/${product.slug || product.id}`}
+                className={styles.featuredCardLink}
+              >
                 <div className={styles.featuredCard}>
                   <div className={styles.featuredCardImage}>
                     <Image
-                      src={feature.imgSrc}
-                      alt={feature.alt}
+                      src={product.image_urls?.[0] || "/placeholder.jpg"}
+                      alt={product.title}
                       width={155}
                       height={155}
                     />
                   </div>
                   <div className={styles.featuredCardDetial}>
                     <div className="">
-                      <h6>
-                        {feature.title}
-                      </h6>
+                      <h6>{product.title}</h6>
                       <div className={styles.brandCartRankingStar}>
                         <i className="bi bi-star-fill"></i>
                         <i className="bi bi-star-fill"></i>
@@ -60,11 +54,13 @@ const Featured = () => {
                       </div>
                       <div className={styles.brandCartFirstOffPercent}>
                         <span className={styles.brandCartOffPercent}>
-                         {feature.price}
+                          {product.final_price || product.price} تومان
                         </span>
-                        <span className={styles.brandCartRealPrice}>
-                          {feature.realPrice}
-                        </span>
+                        {Number(product.discount) > 0 && (
+                          <span className={styles.brandCartRealPrice}>
+                            {product.real_price} تومان
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -79,3 +75,5 @@ const Featured = () => {
 };
 
 export default Featured;
+
+

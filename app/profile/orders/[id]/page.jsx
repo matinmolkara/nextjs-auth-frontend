@@ -1,20 +1,26 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "next/navigation";
 import { getOrderById } from "@/app/api/api"; // فرض وجود این تابع API
-
+import { ProductContext } from "@/context/ProductContext";
 const OrderDetailPage = () => {
   const { id } = useParams(); // دریافت id سفارش از URL
   const [orderDetail, setOrderDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+const { getProductById } = useContext(ProductContext);
+
+
+
+
 
   useEffect(() => {
     const fetchOrderDetail = async () => {
       try {
         setLoading(true);
         const data = await getOrderById(id);
-        setOrderDetail(data.data); // فرض کنید جزئیات سفارش در data.data برگردانده می‌شود
+        setOrderDetail(data.data);
+        
         setLoading(false);
       } catch (err) {
         setError(err.message || "خطا در دریافت جزئیات سفارش");
@@ -26,44 +32,135 @@ const OrderDetailPage = () => {
   }, [id]);
 
   if (loading) {
-    return <div>در حال بارگیری جزئیات سفارش...</div>;
+    return (
+      <div className="alert alert-info text-center">
+        در حال بارگیری جزئیات سفارش...
+      </div>
+    );
   }
 
   if (error) {
-    return <div>خطا: {error}</div>;
+    return <div className="alert alert-danger text-center">خطا: {error}</div>;
   }
 
   if (!orderDetail) {
-    return <div>سفارش یافت نشد.</div>;
+    return (
+      <div className="alert alert-warning text-center">سفارش یافت نشد.</div>
+    );
   }
 
+
+  const shippingAddress = orderDetail.shipping_address
+    ? JSON.parse(orderDetail.shipping_address)
+    : null;
+
+
+
+
+ 
+
+
+
+
   return (
-    <div>
-      <h1>جزئیات سفارش #{orderDetail.order_id}</h1>
-      <p>تاریخ خرید: {new Date(orderDetail.created_at).toLocaleString()}</p>
-      <p>نحوه پرداخت: {orderDetail.payment_method}</p>
-      <p>مبلغ کل: {orderDetail.total_amount}</p>
-      {orderDetail.shippingAddress && (
-        <div>
-          <h3>آدرس ارسال</h3>
-          <p>{orderDetail.shippingAddress}</p>
+    <div className="container py-4">
+      <div className="card shadow-sm mb-4">
+        <div className="card-header bg-primary text-white fw-bold">
+          سفارش #{orderDetail.order_id}
+        </div>
+        <div className="card-body">
+          <p>
+            <strong>تاریخ سفارش:</strong>{" "}
+            {new Date(orderDetail.created_at).toLocaleString()}
+          </p>
+          <p>
+            <strong>نحوه پرداخت:</strong> {orderDetail.payment_method}
+          </p>
+          <p>
+            <strong>وضعیت:</strong> {orderDetail.payment_status}
+          </p>
+          <p>
+            <strong>مبلغ کل:</strong>{" "}
+            {orderDetail.total_amount.toLocaleString()} تومان
+          </p>
+        </div>
+      </div>
+
+      {shippingAddress && (
+        <div className="card shadow-sm mb-4">
+          <div className="card-header bg-secondary text-white fw-bold">
+            آدرس ارسال
+          </div>
+          <div className="card-body">
+            <p className="mb-0">
+              گیرنده: {shippingAddress.reciever} <br />
+              استان: {shippingAddress.province_name}، شهر:{" "}
+              {shippingAddress.city_name} <br />
+              آدرس کامل: {shippingAddress.full_address} <br />
+              پلاک: {shippingAddress.building_num}، واحد:{" "}
+              {shippingAddress.unit_num} <br />
+              کد پستی: {shippingAddress.zip_code} <br />
+              تلفن: {shippingAddress.tel}
+            </p>
+          </div>
         </div>
       )}
-      {/* نمایش لیست محصولات سفارش داده شده */}
+
       {orderDetail.items && orderDetail.items.length > 0 && (
-        <div>
-          <h3>محصولات سفارش داده شده:</h3>
-          <ul>
-            {orderDetail.items.map((item) => (
-              <li key={item.id}>
-                {item.product_name} - تعداد: {item.quantity} - قیمت واحد:{" "}
-                {item.unit_price}
-              </li>
-            ))}
-          </ul>
+        <div className="card shadow-sm">
+          <div className="card-header bg-dark text-white fw-bold">
+            محصولات سفارش داده شده
+          </div>
+          <div className="card-body p-0">
+            <table className="table mb-0">
+              <thead className="table-light">
+                <tr>
+                  <th>محصول</th>
+                  <th>تعداد</th>
+                  <th>قیمت واحد</th>
+                  <th>مجموع</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* {orderDetail.items.map((item,index) => (
+                  <tr key={index}>
+                    <td>{item.product_id}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.unit_price.toLocaleString()} تومان</td>
+                    <td>
+                      {(item.unit_price * item.quantity).toLocaleString()} تومان
+                    </td>
+                  </tr>
+                ))} */}
+                {orderDetail.items.map((item, index) => {
+                
+                  const product = getProductById(item.product_id);
+
+                  return (
+                    <tr key={index}>
+                               
+                      <td>
+                        {product
+                          ? product.title
+                          : `محصول نامشخص (ID: ${item.product_id})`}
+                      </td>
+                      <td>{item.quantity}</td>     
+                        
+                      <td>{item.unit_price.toLocaleString()} تومان</td>    
+                        
+                      <td>      
+                        {(item.unit_price * item.quantity).toLocaleString()}
+                        تومان        
+                      </td>
+                     
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
-      {/* نمایش سایر جزئیات مورد نظر */}
     </div>
   );
 };

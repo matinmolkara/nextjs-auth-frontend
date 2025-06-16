@@ -1,49 +1,30 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState,useCallback } from "react";
 import { ProductContext } from "@/context/ProductContext";
 import AddressItem from "./AddressItem";
 import AddressModal from "./AddressModal";
 import styles from "../../styles/components/Address.module.css";
 
 const AddressTable = ({ onAddressSelect, isShippingPage }) => {
-  console.log("AddressTable: Received onSelectAddress prop:", onAddressSelect); // آیا تابع از والد آمده؟
+  
   const {
     addresses,
-    setAddressess,
+
     selectedAddress,
     setSelectedAddress,
     isEditMode,
     setIsEditMode,
+    addOrUpdateAddress,
+    deleteAddress,
   } = useContext(ProductContext); // دریافت آدرس ها از Context
 
-  const handleAddAddress = (newAddress) => {
-    if (isEditMode) {
-      // ویرایش آدرس
-      setAddressess((prev) =>
-        prev.map((address) =>
-          address.id === selectedAddress.id
-            ? { ...newAddress, id: address.id }
-            : address
-        )
-      );
-    } else {
-      // افزودن آدرس جدید
-      setAddressess((prevAddresses) => [
-        ...prevAddresses,
-        { ...newAddress, id: Date.now() },
-      ]);
-    }
-    resetModalState();
-  };
-
-  const handleDeleteAddress = (id) => {
-    setAddressess((prev) => prev.filter((address) => address.id !== id)); // حذف آدرس
-  };
+  
 
   const resetModalState = () => {
     setSelectedAddress(null);
     setIsEditMode(false);
   };
+  
 
   return (
     <div className="container">
@@ -55,12 +36,14 @@ const AddressTable = ({ onAddressSelect, isShippingPage }) => {
             قسمت تغییر آدرس انتخاب فرمایید.
           </p>
         )}
+
         <div className={styles.inviteContentTable}>
           <div className={`${styles.inviteContentTable0} table-responsive`}>
             <table className="table">
               <thead>
                 <tr>
                   {isShippingPage && <th></th>}
+                  <th>پیش فرض</th>
                   <th>گیرنده</th>
                   <th>آدرس</th>
                   <th>شماره تماس</th>
@@ -73,7 +56,7 @@ const AddressTable = ({ onAddressSelect, isShippingPage }) => {
                     key={address.id}
                     address={address}
                     onSelectAddress={onAddressSelect}
-                    onDeleteAddress={handleDeleteAddress}
+                    onDeleteAddress={deleteAddress}
                     onEditAddress={(addr) => {
                       setSelectedAddress(addr); // تنظیم آدرس برای ویرایش
                       setIsEditMode(true);
@@ -89,7 +72,6 @@ const AddressTable = ({ onAddressSelect, isShippingPage }) => {
               data-bs-target="#addressModal"
               onClick={() => {
                 resetModalState();
-                setIsEditMode(false); // تنظیم حالت برای افزودن
               }}
             >
               افزودن آدرس جدید
@@ -99,9 +81,8 @@ const AddressTable = ({ onAddressSelect, isShippingPage }) => {
       </div>
 
       <AddressModal
-        onSave={handleAddAddress}
+        onSave={(address) => addOrUpdateAddress(address, isEditMode)}
         initialData={selectedAddress}
-        // initialData={isEditMode ? selectedAddress : null}
       />
     </div>
   );

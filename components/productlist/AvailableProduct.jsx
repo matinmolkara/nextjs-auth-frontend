@@ -1,6 +1,10 @@
-import React from 'react'
+"use client";
+import React, { useContext } from "react";
+import { ProductContext } from "@/context/ProductContext";
 
 const AvailableProduct = () => {
+  const { handleFilterChange, filters } = useContext(ProductContext);
+
   return (
     <div>
       <ul>
@@ -9,13 +13,13 @@ const AvailableProduct = () => {
             <input
               className="form-check-input"
               type="checkbox"
-              role="switch"
-              id="flexSwitchCheckDefault"
+              id="available-switch"
+              checked={filters.available}
+              onChange={(e) =>
+                handleFilterChange("available", e.target.checked)
+              }
             />
-            <label
-              className="form-check-label"
-              htmlFor="flexSwitchCheckDefault"
-            >
+            <label className="form-check-label" htmlFor="available-switch">
               فقط کالای موجود
             </label>
           </div>
@@ -23,6 +27,6 @@ const AvailableProduct = () => {
       </ul>
     </div>
   );
-}
+};
 
-export default AvailableProduct
+export default AvailableProduct;

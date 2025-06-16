@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-export default function middleware(req) {
-  const token = cookies().get("token")?.value;
-  const protectedRoutes = ["/dashboard", "/profile"];
+export async function middleware(req) {
+const cookieStore = await cookies(); // ← اینجا await اضافه شد
+const token = cookieStore.get("token")?.value;
 
-  if (protectedRoutes.includes(new URL(req.url).pathname)) {
-    if (!token) return NextResponse.redirect(new URL("/users/login", req.url));
+  if (!token) {
+    const loginUrl = new URL("/users/login", req.url);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard", "/profile"],
+  matcher: ["/dashboard", "/profile/:path*", "/admin-panel/:path*"],
 };

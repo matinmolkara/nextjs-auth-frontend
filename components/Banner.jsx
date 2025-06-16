@@ -5,57 +5,41 @@ import Image from "next/image";
 // import Offer2 from "../public/images/hero/bestoffer2.png";
 // import Offer1 from "../public/images/hero/bestoffer1.png";
 import Link from "next/link";
-const Banner = () => {
-    const bannerData = [
-      {
-        href: "#",
-        imgSrc: "/images/hero/bestoffer3.png", 
-        imgAlt: "offer three",
-        title: "کفش فوتسال مردانه تن زیب مدل TID9602",
-        realPrice: "1800,000 تومن",
-        offPercent: "24% تخفیف",
-        finalPrice: "1,386,000 تومان",
-        titleClass: styles.bannerCartFirstTitle,
-        offPercentClass: styles.bannerCartFirstOffPercent,
-        priceClass: styles.bannerCartFirstPrice,
-      },
-      {
-        href: "#",
-        imgSrc: "/images/hero/bestoffer2.png", 
-        imgAlt: "offer two",
-        title: "کفش پیاده روی مدل J.O.R.D.N_S.e.f",
-        realPrice: "1800,000 تومن",
-        offPercent: "24% تخفیف",
-        finalPrice: "1,386,000 تومان",
-        titleClass: styles.bannerCartSecondTitle,
-        offPercentClass: styles.bannerCartSecondOffPercent,
-        priceClass: styles.bannerCartSecondPrice,
-      },
-      {
-        href: "#",
-        imgSrc: "/images/hero/bestoffer1.png", 
-        imgAlt: "offer one",
-        title: "کیف دوشی زنانه - مدل مینی 2023",
-        realPrice: "1800,000 تومن",
-        offPercent: "24% تخفیف",
-        finalPrice: "1,386,000 تومان",
-        titleClass: styles.bannerCartThirdTitle,
-        offPercentClass: styles.bannerCartThirdOffPercent,
-        priceClass: styles.bannerCartThirdPrice,
-      },
-    ];
+const Banner = ({ items }) => {
+  const fullImageUrl = `${process.env.NEXT_PUBLIC_IMAGE_BASE}`;
   return (
     <div className={styles.banner}>
       <div
         className={`${styles.bannerCartHolder} d-lg-flex justify-content-center`}
       >
-        {bannerData.map((item, index) => (
+        {items.map((item, index) => (
           <Link key={index} href={item.href} className={styles.bannerCart}>
-            <Image src={item.imgSrc} alt={item.imgAlt} width={418} height={318}/>
-            <div className={item.titleClass}>
+            <Image
+              src={`${fullImageUrl}${item.imgSrc}`}
+              alt={item.imgAlt || "تصویر"}
+              width={418}
+              height={418}
+            />
+            <div
+              className={
+                index === 0
+                  ? styles.bannerCartFirstTitle
+                  : index === 1
+                  ? styles.bannerCartSecondTitle
+                  : styles.bannerCartThirdTitle
+              }
+            >
               <h4 className={styles.bannerCartTitle}>{item.title}</h4>
             </div>
-            <div className={item.offPercentClass}>
+            <div
+              className={
+                index === 0
+                  ? styles.bannerCartFirstOffPercent
+                  : index === 1
+                  ? styles.bannerCartSecondOffPercent
+                  : styles.bannerCartThirdOffPercent
+              }
+            >
               <span className={styles.bannerCartRealPrice}>
                 {item.realPrice}
               </span>
@@ -63,7 +47,15 @@ const Banner = () => {
                 {item.offPercent}
               </span>
             </div>
-            <div className={item.priceClass}>
+            <div
+              className={
+                index === 0
+                  ? styles.bannerCartFirstPrice
+                  : index === 1
+                  ? styles.bannerCartSecondPrice
+                  : styles.bannerCartThirdPrice
+              }
+            >
               <h4 className={styles.bannerCartPrice}>{item.finalPrice}</h4>
             </div>
           </Link>
@@ -71,6 +63,6 @@ const Banner = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Banner

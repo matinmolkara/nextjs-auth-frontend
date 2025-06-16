@@ -1,22 +1,44 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import {
   getCart,
   addToCart as apiAddToCart,
   removeFromCart as apiRemoveFromCart,
   updateCartProductCount as apiUpdateCartProductCount,
   clearCart as apiClearCart,
+  getOrCreateGuestCart,
+  mergeGuestCart,
+  getProductById,
 } from "@/app/api/api";
-import { getProductById } from "@/app/api/api";
-
 import { useAuth } from "@/context/authContext";
+
 const CartContext = createContext(undefined);
 
-export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
-const { user } = useAuth();
+const generateCartItemId = (productId, color, size) => {
+   const colorKey = color
+     ? typeof color === "object"
+       ? color.name
+       : color
+     : "noColor";
+   const sizeKey = size || "noSize";
+   return `${productId}-${colorKey}-${sizeKey}`;
+};
 
-  const loadLocalCart = () => {
+export const CartProvider = ({ children }) => {
+  const [isCartLoading, setIsCartLoading] = useState(true);
+  const [cartItems, setCartItems] = useState([]);
+  // *** اضافه شده: وضعیت برای نگهداری شناسه سبد خرید
+  const [cartId, setCartId] = useState(null);
+  const [isCartLoadedFromServer, setIsCartLoadedFromServer] = useState(false);
+  const { user } = useAuth();
+
+  const loadLocalCart = useCallback(() => {
     try {
       const localCart = localStorage.getItem("guestCart");
       return localCart ? JSON.parse(localCart) : [];
@@ -24,7 +46,7 @@ const { user } = useAuth();
       console.error("Error loading local cart:", error);
       return [];
     }
-  };
+  }, []);
 
   const saveLocalCart = (items) => {
     try {
@@ -34,89 +56,73 @@ const { user } = useAuth();
     }
   };
 
-  const fetchCartFromServer = async () => {
-    try {
-      const res = await getCart();
-      
-      const items = res.data?.data?.items || res.data?.items || [];
-    
-      setCartItems(items);
-    } catch (error) {
-      console.error("خطا در دریافت سبد خرید از سرور:", error);
-      // اگر کاربر وارد نشده و خطایی در دریافت از سرور رخ داد، سبد محلی را بارگیری کنید
-      if (!user) {
-        setCartItems(loadLocalCart());
-      }
-    }
-  };
-
-
-const ensureGuestCartOnServer = async () => {
-  try {
-    const res = await getOrCreateGuestCart(); // ست شدن guestCartId توسط سرور
-    // این فقط لازمه یک بار اجرا بشه در شروع اضافه به سبد
-  } catch (error) {
-    console.error("خطا در ساخت سبد مهمان سمت سرور:", error);
-  }
-};
-
-
-
   const updateCartInContext = (newItems) => {
     setCartItems(newItems);
     saveLocalCart(newItems);
   };
 
+const fetchCartFromServer = useCallback(async () => {
+  setIsCartLoading(true);
+  if (!user) {
+    const localItems = loadLocalCart();
+    setCartItems(localItems);
+    // *** در حالت مهمان، cartId را null قرار می‌دهیم
+    setCartId(null);
+    setIsCartLoading(false);
+    return;
+  }
+  try {
+    // *** اصلاح شده: انتظار داریم getCart شیئی شامل cartId و items برگرداند
+    const res = await getCart();
+    // *** استخراج cartId و items از پاسخ
+    const serverCartId = res.cartId;
+    const serverItems = res.items || [];
+
+    const itemsWithIds = serverItems.map((item) => ({
+      ...item,
+      id: generateCartItemId(item.product_id, item.color, item.size),
+    }));
+    itemsWithIds.sort((a, b) => a.id.localeCompare(b.id));
+
+    // *** به‌روزرسانی وضعیت‌ها
+    setCartItems(itemsWithIds);
+    // *** به‌روزرسانی وضعیت cartId
+    setCartId(serverCartId);
+    setIsCartLoadedFromServer(true);
+    setIsCartLoading(false);
+  } catch (error) {
+    console.error("خطا در دریافت سبد خرید از سرور:", error);
+    const localItems = loadLocalCart();
+    setCartItems(localItems);
+    // *** در صورت خطا نیز cartId را null قرار می‌دهیم (یا وضعیت قبلی را نگه می‌داریم، اما null منطقی‌تر است)
+    setCartId(null);
+    setIsCartLoading(false);
+  }
+}, [user, loadLocalCart]);
+
+
   const addToCart = async (
     productId,
     quantity = 1,
     color = null,
-    size = null,
-    
+    size = null
   ) => {
     const colorValueToSend =
       typeof color === "object" && color !== null ? color.name : color;
-    const newItem = {
-      product_id: productId,
-      quantity,
-      color: colorValueToSend,
-      size,
-    };
+    const itemId = generateCartItemId(productId, colorValueToSend, size);
 
     if (user) {
       try {
-        await ensureGuestCartOnServer();
+        await getOrCreateGuestCart();
         await apiAddToCart(productId, quantity, colorValueToSend, size);
         await fetchCartFromServer();
       } catch (error) {
         console.error("خطا در افزودن به سبد سرور:", error);
-        // در صورت خطا در سرور، سبد محلی را به‌روزرسانی کنید (به عنوان fallback)
-        const existingItemIndex = cartItems.findIndex(
-          (item) =>
-            item.product_id === productId &&
-            (item.color
-              ? item.color === colorValueToSend
-              : !colorValueToSend) &&
-            (item.size ? item.size === size : !size)
-        );
-
-        if (existingItemIndex > -1) {
-          const newCartItems = [...cartItems];
-          newCartItems[existingItemIndex].quantity += quantity;
-          updateCartInContext(newCartItems);
-        } else {
-          updateCartInContext([...cartItems, newItem]);
-        }
       }
     } else {
-      // کاربر مهمان: به‌روزرسانی سبد محلی
       const existingItemIndex = cartItems.findIndex(
-        (item) =>
-          item.product_id === productId &&
-          (item.color ? item.color === colorValueToSend : !colorValueToSend) &&
-          (item.size ? item.size === size : !size)
+        (item) => item.id === itemId
       );
-
       if (existingItemIndex > -1) {
         const newCartItems = [...cartItems];
         newCartItems[existingItemIndex].quantity += quantity;
@@ -126,6 +132,7 @@ const ensureGuestCartOnServer = async () => {
           const productData = await getProductById(productId);
           if (!productData) throw new Error("محصول یافت نشد");
           const fullItem = {
+            id: itemId,
             product_id: productId,
             quantity,
             color: colorValueToSend,
@@ -134,7 +141,6 @@ const ensureGuestCartOnServer = async () => {
             price: productData.price,
             image_urls: productData.image_urls || [],
           };
-
           updateCartInContext([...cartItems, fullItem]);
         } catch (err) {
           console.error("خطا در واکشی اطلاعات محصول:", err);
@@ -144,62 +150,36 @@ const ensureGuestCartOnServer = async () => {
   };
 
   const removeFromCart = async (productId, color, size) => {
+    const itemId = generateCartItemId(productId, color, size);
     if (user) {
       try {
         await apiRemoveFromCart(productId, color, size);
         await fetchCartFromServer();
       } catch (error) {
         console.error("خطا در حذف از سبد سرور:", error);
-        // در صورت خطا در سرور، سبد محلی را به‌روزرسانی کنید (به عنوان fallback)
-        const newCartItems = cartItems.filter(
-          (item) =>
-            !(
-              item.product_id === productId &&
-              (item.color ? item.color === color : !color) &&
-              (item.size ? item.size === size : !size)
-            )
-        );
-        updateCartInContext(newCartItems);
       }
     } else {
-      // کاربر مهمان: به‌روزرسانی سبد محلی
-      const newCartItems = cartItems.filter(
-        (item) =>
-          !(
-            item.product_id === productId &&
-            (item.color ? item.color === color : !color) &&
-            (item.size ? item.size === size : !size)
-          )
-      );
+      const newCartItems = cartItems.filter((item) => item.id !== itemId);
       updateCartInContext(newCartItems);
     }
   };
 
   const updateCartProductCount = async (productId, quantity, color, size) => {
+    const itemId = generateCartItemId(productId, color, size);
     if (user) {
       try {
         await apiUpdateCartProductCount(productId, quantity, color, size);
         await fetchCartFromServer();
       } catch (error) {
         console.error("خطا در بروزرسانی سبد سرور:", error);
-        // در صورت خطا در سرور، سبد محلی را به‌روزرسانی کنید (به عنوان fallback)
         const newCartItems = cartItems.map((item) =>
-          item.product_id === productId &&
-          (item.color ? item.color === color : !color) &&
-          (item.size ? item.size === size : !size)
-            ? { ...item, quantity }
-            : item
+          item.id === itemId ? { ...item, quantity } : item
         );
         updateCartInContext(newCartItems);
       }
     } else {
-      // کاربر مهمان: به‌روزرسانی سبد محلی
       const newCartItems = cartItems.map((item) =>
-        item.product_id === productId &&
-        (item.color ? item.color === color : !color) &&
-        (item.size ? item.size === size : !size)
-          ? { ...item, quantity }
-          : item
+        item.id === itemId ? { ...item, quantity } : item
       );
       updateCartInContext(newCartItems);
     }
@@ -212,25 +192,44 @@ const ensureGuestCartOnServer = async () => {
         await fetchCartFromServer();
       } catch (error) {
         console.error("خطا در پاکسازی سبد سرور:", error);
-        // در صورت خطا در سرور، سبد محلی را پاک کنید (به عنوان fallback)
-        updateCartInContext([]);
       }
     } else {
-      // کاربر مهمان: پاکسازی سبد محلی
       updateCartInContext([]);
+      setCartId(null);
     }
   };
 
   useEffect(() => {
-    // بارگیری سبد محلی در ابتدا
-    const initialLocalCart = loadLocalCart();
-    setCartItems(initialLocalCart);
+    const handleCartMergeOnLogin = async () => {
+      if (user && !isCartLoadedFromServer) {
+        const guestCart = loadLocalCart();
+        if (guestCart.length > 0) {
+          try {
+            await mergeGuestCart(guestCart);
+            localStorage.removeItem("guestCart");
+          } catch (error) {
+            console.error("خطا در ادغام سبد مهمان:", error);
+          }
+        }
+        await fetchCartFromServer();
+      } else if (!user) {
+        const localItems = loadLocalCart();
+        localItems.sort((a, b) => a.id.localeCompare(b.id)); // Sort local cart too
+        setCartItems(localItems);
+        setCartId(null);
+      }
+    };
+    handleCartMergeOnLogin();
+  }, [user, isCartLoadedFromServer, fetchCartFromServer]);
 
-    // اگر کاربر وارد شد، تلاش برای دریافت سبد از سرور
-    if (user) {
-      fetchCartFromServer();
-    }
-  }, [user]); // وابستگی به user تا بعد از ورود سبد از سرور fetch شود
+
+
+ useEffect(() => {
+   fetchCartFromServer();
+ 
+ }, [fetchCartFromServer]);
+
+
 
   return (
     <CartContext.Provider
@@ -240,7 +239,9 @@ const ensureGuestCartOnServer = async () => {
         removeFromCart,
         updateCartProductCount,
         clearCart,
-        fetchCart: fetchCartFromServer, // نام تابع fetch را واضح تر کردیم
+        fetchCart: fetchCartFromServer,
+        isCartLoading,
+        cartId,
       }}
     >
       {children}
