@@ -1,7 +1,7 @@
 // app/products/page.tsx
 "use client";
 import React, { useEffect, useState } from "react";
-import { getProducts, deleteProduct, getCategories } from "@/app/api/api";
+import { getProducts, getCategories } from "@/app/api/api";
 import Link from "next/link";
 
 const ProductListPage = () => {
@@ -38,11 +38,11 @@ const ProductListPage = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("آیا از حذف این محصول مطمئن هستید؟")) return;
-    await deleteProduct(id);
-    fetchProducts();
-  };
+  // const handleDelete = async (id) => {
+  //   if (!confirm("آیا از حذف این محصول مطمئن هستید؟")) return;
+  //   await deleteProduct(id);
+  //   fetchProducts();
+  // };
 
   const getCategoryName = (categoryId) => {
     const category = categories.find((cat) => cat.id === categoryId);
