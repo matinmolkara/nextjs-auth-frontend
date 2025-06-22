@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/authContext";
-import React, { createContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useState, useEffect, useCallback, Suspense } from "react";
 import {
   getProducts,
   getBrands,
@@ -285,56 +285,59 @@ export const ProductProvider = ({ children }) => {
   );
 
   return (
-    <ProductContext.Provider
-      value={{
-        products,
-        filteredProducts,
-        filters,
-        fetchProducts,
-        handleFilterChange,
-        getProductById: (id) => products.find((p) => p.id === parseInt(id, 10)) || null,
-        setProducts,
-        productImages: [],
-        setProductImages: () => {},
-        brands,
-        setBrands,
-        categories,
-        setCategories,
-        sizes,
-        colors,
-        addresses,
-        setAddressess,
-        provinces,
-        cities,
-        calculateShippingPrice,
-        discountValue,
-        setDiscountValue,
-        selectedAddress,
-        setSelectedAddress,
-        isEditMode,
-        setIsEditMode,
-        productColors,
-        setProductColors,
-        productSizes,
-        setProductSizes,
-        orders,
-        fetchUserOrders,
-        deleteAddress,
-        setDefaultAddress,
-        addOrUpdateAddress,
-        paymentMethod,
-        setPaymentMethod,
-        productAttributes,
-        setProductAttributes,
-        productDescriptions,
-        setProductDescriptions,
-        comments,
-        setComments,
-        relatedProducts,
-        setRelatedProducts,
-      }}
-    >
-      {children}
-    </ProductContext.Provider>
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductContext.Provider
+        value={{
+          products,
+          filteredProducts,
+          filters,
+          fetchProducts,
+          handleFilterChange,
+          getProductById: (id) =>
+            products.find((p) => p.id === parseInt(id, 10)) || null,
+          setProducts,
+          productImages: [],
+          setProductImages: () => {},
+          brands,
+          setBrands,
+          categories,
+          setCategories,
+          sizes,
+          colors,
+          addresses,
+          setAddressess,
+          provinces,
+          cities,
+          calculateShippingPrice,
+          discountValue,
+          setDiscountValue,
+          selectedAddress,
+          setSelectedAddress,
+          isEditMode,
+          setIsEditMode,
+          productColors,
+          setProductColors,
+          productSizes,
+          setProductSizes,
+          orders,
+          fetchUserOrders,
+          deleteAddress,
+          setDefaultAddress,
+          addOrUpdateAddress,
+          paymentMethod,
+          setPaymentMethod,
+          productAttributes,
+          setProductAttributes,
+          productDescriptions,
+          setProductDescriptions,
+          comments,
+          setComments,
+          relatedProducts,
+          setRelatedProducts,
+        }}
+      >
+        {children}
+      </ProductContext.Provider>
+    </Suspense>
   );
 };

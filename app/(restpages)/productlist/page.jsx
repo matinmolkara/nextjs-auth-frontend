@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { Suspense, useContext, useEffect } from "react";
 import { ProductContext } from "@/context/ProductContext";
 import { useSearchParams } from "next/navigation";
 
@@ -38,7 +38,7 @@ const ProductList = () => {
   }, [categoryId, brand, available, discount, bestSeller, fetchProducts]);
 
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <div className="gap"></div>
       <div className="productList">
         <div className="container">
@@ -75,7 +75,7 @@ const ProductList = () => {
           </div>
         </div>
       </div>
-    </>
+    </Suspense>
   );
 };
 

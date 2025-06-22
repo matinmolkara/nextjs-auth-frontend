@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { verifyEmail } from "@/app/api/api";
 import LoginFrame from "@/components/login/LoginFrame";
@@ -33,10 +33,12 @@ const VerifyEmailPage = () => {
   }, [searchParams, router]);
 
   return (
-    <LoginFrame>
-      <LoginHeader title="تایید ایمیل" />
-      <p className="text-center mt-4">{status}</p>
-    </LoginFrame>
+    <Suspense fallback={<div>در حال بارگیری...</div>}>
+      <LoginFrame>
+        <LoginHeader title="تایید ایمیل" />
+        <p className="text-center mt-4">{status}</p>
+      </LoginFrame>
+    </Suspense>
   );
 };
 

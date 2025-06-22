@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation"; // Import useSearchParams
@@ -8,7 +8,7 @@ const OrderNav = () => {
   const status = searchParams.get("status");
 
   return (
-    <div>
+    <Suspense fallback={<div>Loading...</div>}>
       <div className="middle-list-holder">
         <div className="middle-second-list-holder">
           <ul className="nav">
@@ -80,7 +80,7 @@ const OrderNav = () => {
           </ul>
         </div>
       </div>
-    </div>
+    </Suspense>
   );
 };
 

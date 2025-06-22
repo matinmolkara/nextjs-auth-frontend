@@ -1,5 +1,5 @@
 "use client"
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, Suspense } from "react";
 import Dashboard from "@/components/profile/Dashboard";
 import styles from "../../../styles/components/profile.module.css";
 import OrderNav from "@/components/profile/OrderNav";
@@ -40,7 +40,7 @@ const Page = () => {
   }
 
   return (
-    <div>
+    <Suspense fallback={<div>Loading...</div>}>
       <div className="container">
         <div className={styles.profileContainer}>
           <div className="col-12 col-lg-3">
@@ -69,7 +69,7 @@ const Page = () => {
           </div>
         </div>
       </div>
-    </div>
+    </Suspense>
   );
 };
 
