@@ -1,10 +1,10 @@
 
 "use client"
 import React, { useState } from "react";
-import DatePicker from "react-multi-date-picker";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
-import "react-datepicker/dist/react-datepicker.css";
+// import DatePicker from "react-multi-date-picker";
+// import persian from "react-date-object/calendars/persian";
+// import persian_fa from "react-date-object/locales/persian_fa";
+
 import { createUser } from "@/app/api/api";
 import Section from "@/components/admin/products/Section";
 import Link from "next/link";
@@ -221,7 +221,7 @@ const UserAddPage = () => {
             </div>
             <div className="col-md-3 mb-3">
               <label className="form-label">تاریخ تولد</label>
-              <DatePicker
+              {/* <DatePicker
                 value={formValues.birthDate}
                 onChange={(date) =>
                   setFormValues({ ...formValues, birthDate: date })
@@ -232,7 +232,7 @@ const UserAddPage = () => {
                 inputClass="form-control"
                 format="YYYY/MM/DD"
                 placeholder="تاریخ تولد را انتخاب کنید"
-              />
+              /> */}
             </div>
           </div>
         </Section>
