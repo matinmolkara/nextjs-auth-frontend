@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import React, { useEffect, useState } from "react";
 import { getColors, createColor } from "@/app/api/api";
 import Section from "@/components/admin/products/Section";

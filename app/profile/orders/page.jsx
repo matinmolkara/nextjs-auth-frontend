@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-dynamic";
 import React, { useContext, useState, useEffect, Suspense } from "react";
 import Dashboard from "@/components/profile/Dashboard";
 import styles from "../../../styles/components/profile.module.css";

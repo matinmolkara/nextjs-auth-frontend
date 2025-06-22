@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import React, { useState, useEffect, useContext } from "react";
 import { ProductContext } from "@/context/ProductContext";
 import { getAllAttributes, saveCategoryAttributes } from "@/app/api/api";

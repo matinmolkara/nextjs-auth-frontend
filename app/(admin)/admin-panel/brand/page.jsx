@@ -1,5 +1,6 @@
 // app/brands/page.tsx
 "use client";
+export const dynamic = "force-dynamic";
 import React, { useState, useEffect } from "react";
 import { getBrands, deleteBrand, getProductsByBrandId } from "@/app/api/api";
 import Link from "next/link";
