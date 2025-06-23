@@ -27,7 +27,7 @@ const OrderVerifyPage = () => {
   const handlePlaceOrder = async () => {
  
     try {
-      const response = await fetch(`${BASE_URL}/orders`, {
+      const response = await fetch(`${BASE_URL}/api/orders`, {
         method: "POST",
         credentials: "include",
         headers: {

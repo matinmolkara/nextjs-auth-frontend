@@ -37,7 +37,7 @@ const CheckoutSubmitButton = ({
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/orders`, {
+      const response = await fetch(`${BASE_URL}/api/orders`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -57,7 +57,7 @@ const CheckoutSubmitButton = ({
       if (response.ok) {
         if (paymentMethod === "online") {
           const gatewayRes = await fetch(
-            `${BASE_URL}/payments/initiate`,
+            `${BASE_URL}/api/payments/initiate`,
             {
               method: "POST",
               credentials: "include",

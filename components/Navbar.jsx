@@ -40,7 +40,7 @@ const Navbar = () => {
         // آدرس API شما برای دریافت همه دسته‌بندی‌ها
         // مطمئن شوید که این آدرس صحیح است
         const res = await fetch(
-          `${BASE_URL}/categories?all=true`
+          `${BASE_URL}/api/categories?all=true`
         ); // مثال: فرض کنید API شما در مسیر /api/categories قرار دارد
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);

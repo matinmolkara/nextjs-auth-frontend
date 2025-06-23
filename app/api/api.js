@@ -39,7 +39,7 @@ export const getProducts = async (filters = {}) => {
 
 
 export const getBrands = async (filters = {}) => {
-  let url = `${BASE_URL}/brands`;
+  let url = `${BASE_URL}/api/brands`;
   const params = new URLSearchParams();
 
   if (filters.search) params.append("search", filters.search);
@@ -56,7 +56,7 @@ export const getBrands = async (filters = {}) => {
 
 export const createBrand = async (brandName) => {
   try {
-    const response = await axios.post(`${BASE_URL}/brands`, {
+    const response = await axios.post(`${BASE_URL}/api/brands`, {
       name: brandName,
     });
     return response.data;
@@ -67,7 +67,7 @@ export const createBrand = async (brandName) => {
 }
 export const getBrandById = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/brands/${id}`);
+    const response = await axios.get(`${BASE_URL}/api/brands/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching brand by ID:", error);
@@ -78,7 +78,7 @@ export const getBrandById = async (id) => {
 // api.js
 export const updateBrand = async (id, brandName) => {
   try {
-    const response = await axios.put(`${BASE_URL}/brands/${id}`, {
+    const response = await axios.put(`${BASE_URL}/api/brands/${id}`, {
       name: brandName,
     });
     return response.data;
@@ -90,7 +90,7 @@ export const updateBrand = async (id, brandName) => {
 
 export const deleteBrand = async (brandId) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/brands/${brandId}`);
+    const response = await axios.delete(`${BASE_URL}/api/brands/${brandId}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting brand:", error);
@@ -99,7 +99,7 @@ export const deleteBrand = async (brandId) => {
 }
 export const getProductsByBrandId = async (brandId) => {
   try {
-    const res = await axios.get(`${BASE_URL}/products/brand/${brandId}`);
+    const res = await axios.get(`${BASE_URL}/api/products/brand/${brandId}`);
     return res.data;
   } catch (error) {
     console.error("Error fetching products for brand", error);
@@ -109,7 +109,7 @@ export const getProductsByBrandId = async (brandId) => {
 
 
 export const getCategories = async (filters = {}) => {
-  let url = `${BASE_URL}/categories`;
+  let url = `${BASE_URL}/api/categories`;
   const params = new URLSearchParams();
 
   if (filters.search) params.append("search", filters.search);
@@ -136,7 +136,7 @@ export const getCategories = async (filters = {}) => {
 
 export const getCategoryById = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/categories/${id}`);
+    const response = await axios.get(`${BASE_URL}/api/categories/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching category by ID:", error);
@@ -145,7 +145,7 @@ export const getCategoryById = async (id) => {
 }
 export const createCategory = async (categoryName,parent_id) => {
   try {
-    const response = await axios.post(`${BASE_URL}/categories`, {
+    const response = await axios.post(`${BASE_URL}/api/categories`, {
       name: categoryName,
       parent_id:parent_id,
     });
@@ -157,7 +157,7 @@ export const createCategory = async (categoryName,parent_id) => {
 }
 export const updateCategory = async (categoryId, data) => {
   try {
-    const response = await axios.put(`${BASE_URL}/categories/${categoryId}`, {
+    const response = await axios.put(`${BASE_URL}/api/categories/${categoryId}`, {
       name: data.name,
       parent_id: data.parent_id,
     });
@@ -169,7 +169,7 @@ export const updateCategory = async (categoryId, data) => {
 }
 export const deleteCategory = async (categoryId) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/categories/${categoryId}`);
+    const response = await axios.delete(`${BASE_URL}/api/categories/${categoryId}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting category:", error);
@@ -179,7 +179,7 @@ export const deleteCategory = async (categoryId) => {
 export const getProductCategoriesByCategoryId = async (categoryId) => {
   try {
     const res = await axios.get(
-      `${BASE_URL}/productcategories/category/${categoryId}`
+      `${BASE_URL}/api/productcategories/category/${categoryId}`
     );
     return res.data;
   } catch (err) {
@@ -190,7 +190,7 @@ export const getProductCategoriesByCategoryId = async (categoryId) => {
 
 export const getColors = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/colors`);
+    const response = await axios.get(`${BASE_URL}/api/colors`);
     return response.data;
   } catch (error) {
     console.error("Error fetching colors:", error);
@@ -200,7 +200,7 @@ export const getColors = async () => {
 
 export const createColor = async (colorName, colorCode) => {
   try {
-    const response = await axios.post(`${BASE_URL}/colors`, {
+    const response = await axios.post(`${BASE_URL}/api/colors`, {
       name: colorName,
       code: colorCode,
     });
@@ -213,7 +213,7 @@ export const createColor = async (colorName, colorCode) => {
 export const getProductColors = async (productId) => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/products/${productId}/colors`
+      `${BASE_URL}/api/products/${productId}/colors`
     );
     return response.data;
   } catch (error) {
@@ -224,7 +224,7 @@ export const getProductColors = async (productId) => {
 export const getProductSizes = async (productId) => {
   try {
     const response = await axios.get(
-      `${BASE_URL}/products/${productId}/sizes`
+      `${BASE_URL}/api/products/${productId}/sizes`
     );
     return response.data;
   } catch (error) {
@@ -234,7 +234,7 @@ export const getProductSizes = async (productId) => {
 };
 export const getSizes = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/sizes`);
+    const response = await axios.get(`${BASE_URL}/api/sizes`);
     return response.data;
   } catch (error) {
     console.error("Error fetching sizes:", error);
@@ -244,7 +244,7 @@ export const getSizes = async () => {
 
 export const createSize = async (sizeName ,typeName) => {
   try {
-    const response = await axios.post(`${BASE_URL}/sizes`, {
+    const response = await axios.post(`${BASE_URL}/api/sizes`, {
       size: sizeName,
       type:typeName,
     });
@@ -256,7 +256,7 @@ export const createSize = async (sizeName ,typeName) => {
 
 export const deleteSize = async (sizeId) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/sizes/${sizeId}`);
+    const response = await axios.delete(`${BASE_URL}/api/sizes/${sizeId}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting size:", error);
@@ -267,7 +267,7 @@ export const deleteSize = async (sizeId) => {
 //توابع api را به همین شکل برای دریافت سایر داده ها اضافه کنید.
 export const getAddresses = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/addresses`, {
+    const response = await axios.get(`${BASE_URL}/api/addresses`, {
       withCredentials: true,
     });
     return response.data;
@@ -278,7 +278,7 @@ export const getAddresses = async () => {
 };
 export const getProvinces = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/provinces`);
+    const response = await axios.get(`${BASE_URL}/api/provinces`);
     return response.data;
   } catch (error) {
     console.error("Error fetching provinces:", error);
@@ -287,7 +287,7 @@ export const getProvinces = async () => {
 };
 export const getCities = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/cities`);
+    const response = await axios.get(`${BASE_URL}/api/cities`);
     return response.data;
   } catch (error) {
     console.error("Error fetching cities:", error);
@@ -296,7 +296,7 @@ export const getCities = async () => {
 };
 export const getUserOrders = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/orders/me`, {
+    const response = await axios.get(`${BASE_URL}/api/orders/me`, {
       withCredentials: true,
     });
     return response.data;
@@ -308,7 +308,7 @@ export const getUserOrders = async () => {
 
 export const getOrderById = async (orderId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/orders/${orderId}`, {
+    const response = await axios.get(`${BASE_URL}/api/orders/${orderId}`, {
       withCredentials: true,
     });
 
@@ -320,7 +320,7 @@ export const getOrderById = async (orderId) => {
 };
 export const getAdminOrders = async (params = { page: 1, limit: 10 }) => {
   try {
-    const response = await axios.get(`${BASE_URL}/orders/admin/orders`, {
+    const response = await axios.get(`${BASE_URL}/api/orders/admin/orders`, {
       params,
       withCredentials: true,
     });
@@ -336,7 +336,7 @@ export const getAdminOrders = async (params = { page: 1, limit: 10 }) => {
 export const updateOrderStatus = async (orderId, { orderStatus, paymentStatus, notes }) => {
   try {
     const response = await axios.put(
-      `${BASE_URL}/orders/${orderId}/status`,
+      `${BASE_URL}/api/orders/${orderId}/status`,
       {
         orderStatus,
         paymentStatus,
@@ -356,7 +356,7 @@ export const updateOrderStatus = async (orderId, { orderStatus, paymentStatus, n
 
 export const deleteOrder = async (orderId) => {
   try {
-    const res = await axios.delete(`${BASE_URL}/orders/${orderId}`, {
+    const res = await axios.delete(`${BASE_URL}/api/orders/${orderId}`, {
       withCredentials: true,
     });
     return res.data;
@@ -373,7 +373,7 @@ export const deleteOrder = async (orderId) => {
 // توابع مربوط به سبد خرید (بدون withCredentials)
 export const getCart = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/cart`, {
+    const response = await axios.get(`${BASE_URL}/api/cart`, {
       withCredentials: true,
     });
     // *** اصلاح شده: انتظار داریم پاسخ شامل data.cartId و data.items باشد
@@ -404,7 +404,7 @@ export const addToCart = async (productId, quantity, color , size ) => {
         // if (colorValueToSend) payload.color = colorValueToSend;
         // if (size) payload.size = size;
         await axios.post(
-          `${BASE_URL}/cart/add`,
+          `${BASE_URL}/api/cart/add`,
 
           payload,
           {
@@ -425,7 +425,7 @@ export const removeFromCart = async (productId, color, size) => {
         if (colorValue) payload.color = colorValue;
         if (size) payload.size = size;
         await axios.post(
-          `${BASE_URL}/cart/remove`,
+          `${BASE_URL}/api/cart/remove`,
           
           payload,
           {
@@ -446,7 +446,7 @@ export const updateCartProductCount = async (productId, quantity, color, size) =
         if (colorValue) payload.color = colorValue;
         if (size) payload.size = size;
         await axios.post(
-          `${BASE_URL}/cart/update`,
+          `${BASE_URL}/api/cart/update`,
           
           payload,{
             withCredentials: true, 
@@ -461,7 +461,7 @@ export const updateCartProductCount = async (productId, quantity, color, size) =
 
 export const clearCart = async () => {
     try {
-        await axios.post(`${BASE_URL}/cart/clear`,
+        await axios.post(`${BASE_URL}/api/cart/clear`,
           {},
           { withCredentials: true, }
         );
@@ -473,7 +473,7 @@ export const clearCart = async () => {
 };
 export const getProductById = async (productId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/products/${productId}`);
+    const response = await axios.get(`${BASE_URL}/api/products/${productId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching product by ID:", error);
@@ -481,7 +481,7 @@ export const getProductById = async (productId) => {
   }
 };
 export const getOrCreateGuestCart = async () => {
-  const res = await axios.get(`${BASE_URL}/cart`, {
+  const res = await axios.get(`${BASE_URL}/api/cart`, {
     withCredentials: true,
   });
   return res.data;
@@ -489,7 +489,7 @@ export const getOrCreateGuestCart = async () => {
 export const mergeGuestCart = async (items) => {
   try {
     await axios.post(
-      `${BASE_URL}/cart/merge`,
+      `${BASE_URL}/api/cart/merge`,
       { items },
       {
         withCredentials: true,
@@ -503,7 +503,7 @@ export const mergeGuestCart = async (items) => {
 
 export const createAddressApi = async (address) => {
   try {
-    const response = await axios.post(`${BASE_URL}/addresses`, address, {
+    const response = await axios.post(`${BASE_URL}/api/addresses`, address, {
       withCredentials: true,
     });
     return response.data;
@@ -516,7 +516,7 @@ export const createAddressApi = async (address) => {
 export const updateAddressApi = async (addressId, address) => {
   try {
     const response = await axios.put(
-      `${BASE_URL}/addresses/${addressId}`,
+      `${BASE_URL}/api/addresses/${addressId}`,
       address,
       { withCredentials: true }
     );
@@ -529,7 +529,7 @@ export const updateAddressApi = async (addressId, address) => {
 
 export const deleteAddressApi = async (addressId) => {
   try {
-    await axios.delete(`${BASE_URL}/addresses/${addressId}`, {
+    await axios.delete(`${BASE_URL}/api/addresses/${addressId}`, {
       withCredentials: true,
     });
   } catch (error) {
@@ -541,7 +541,7 @@ export const deleteAddressApi = async (addressId) => {
 export const setDefaultAddressApi = async (addressId) => {
   try {
     const response = await axios.post(
-      `${BASE_URL}/addresses/set-default`,
+      `${BASE_URL}/api/addresses/set-default`,
       { addressId },
       { withCredentials: true }
     );
@@ -555,7 +555,7 @@ export const setDefaultAddressApi = async (addressId) => {
 // دریافت توضیحات کلی برای یک محصول
 export const getProductGeneralDescriptions = async (productId) => {
   try {
-    const res = await axios.get(`${BASE_URL}/products/${productId}/descriptions`);
+    const res = await axios.get(`${BASE_URL}/api/products/${productId}/descriptions`);
     return res.data;
   } catch (error) {
     console.error("Error fetching general descriptions:", error);
@@ -565,7 +565,7 @@ export const getProductGeneralDescriptions = async (productId) => {
 // دریافت ویژگی‌های فنی محصول (attribute values)
 export const getProductAttributes = async (productId) => {
   try {
-    const res = await axios.get(`${BASE_URL}/products/${productId}/attributes`);
+    const res = await axios.get(`${BASE_URL}/api/products/${productId}/attributes`);
     return res.data;
   } catch (error) {
     console.error("Error fetching product attributes:", error);
@@ -577,7 +577,7 @@ export const getProductAttributes = async (productId) => {
 export const getCategoryAttributes = async (categoryId) => {
   try {
     const res = await axios.get(
-      `${BASE_URL}/attributes/categories/${categoryId}`
+      `${BASE_URL}/api/attributes/categories/${categoryId}`
     );
     return res.data;
   } catch (error) {
@@ -587,7 +587,7 @@ export const getCategoryAttributes = async (categoryId) => {
 };
 export const getAllAttributes = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/attributes`);
+    const response = await axios.get(`${BASE_URL}/api/attributes`);
     return response.data;
   } catch (error) {
     console.error("Error fetching attributes:", error);
@@ -597,7 +597,7 @@ export const getAllAttributes = async () => {
 export const saveCategoryAttributes = async ({ category_id, attributes }) => {
   try {
     const response = await axios.post(
-      `${BASE_URL}/attributes/categories/${category_id}/attributes`,
+      `${BASE_URL}/api/attributes/categories/${category_id}/attributes`,
       {
         attributes,
       }
@@ -613,7 +613,7 @@ export const saveCategoryAttributes = async ({ category_id, attributes }) => {
 };
 export const createAttributeKey = async (data) => {
   try {
-    const response = await axios.post(`${BASE_URL}/attributes`, data);
+    const response = await axios.post(`${BASE_URL}/api/attributes`, data);
     return response.data;
   } catch (error) {
     console.error("Error creating attribute:", error);
@@ -623,7 +623,7 @@ export const createAttributeKey = async (data) => {
 
 export const deleteAttributeKey = async (id) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/attributes/${id}`);
+    const response = await axios.delete(`${BASE_URL}/api/attributes/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting attribute:", error);
@@ -633,7 +633,7 @@ export const deleteAttributeKey = async (id) => {
 // api.js
 export const addProduct = async (formData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/products`, formData, {
+    const response = await axios.post(`${BASE_URL}/api/products`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -647,7 +647,7 @@ export const addProduct = async (formData) => {
 
 export const updateProduct = async (id, formData) => {
   try {
-    const response = await axios.put(`${BASE_URL}/products/${id}`, formData, {
+    const response = await axios.put(`${BASE_URL}/api/products/${id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -661,7 +661,7 @@ export const updateProduct = async (id, formData) => {
 
 export const getUsers = async (params) => {
   try {
-    const response = await axios.get(`${BASE_URL}/users`, {
+    const response = await axios.get(`${BASE_URL}/api/users`, {
       params,
       withCredentials: true,
     });
@@ -673,28 +673,28 @@ export const getUsers = async (params) => {
 }
 
 export const getUserById = async (id) => {
-  const response = await axios.get(`${BASE_URL}/users/${id}`, {
+  const response = await axios.get(`${BASE_URL}/api/users/${id}`, {
     withCredentials: true,
   });
   return response.data;
 }
 
 export const updateUser = async (id, data) => {
-  const response = await axios.put(`${BASE_URL}/users/${id}`, data, {
+  const response = await axios.put(`${BASE_URL}/api/users/${id}`, data, {
     withCredentials: true,
   });
   return response.data; 
 }
 
 export const createUser = async (data) => {
-  const response = await axios.post(`${BASE_URL}/users`, data, {
+  const response = await axios.post(`${BASE_URL}/api/users`, data, {
     withCredentials: true,
   });
   return response.data;
 }
 
 export const getUserCount = async () => {
-  const response = await axios.get(`${BASE_URL}/users/count`, {
+  const response = await axios.get(`${BASE_URL}/api/users/count`, {
     withCredentials: true,
   });
   return response.data;
@@ -703,7 +703,7 @@ export const getUserCount = async () => {
  
 export const getPages = async (params) => {
   try {
-    const response = await axios.get(`${BASE_URL}/pages`, {
+    const response = await axios.get(`${BASE_URL}/api/pages`, {
       params,
       withCredentials: true,
     });
@@ -715,7 +715,7 @@ export const getPages = async (params) => {
 }
 export const getPageBySlug = async (slug) => {
   try {
-    const response = await axios.get(`${BASE_URL}/pages/${slug}`, {
+    const response = await axios.get(`${BASE_URL}/api/pages/${slug}`, {
       withCredentials: true,
     });
     return response.data;
@@ -727,7 +727,7 @@ export const getPageBySlug = async (slug) => {
 
 export const createPage = async (data) => {
   try {
-    const response = await axios.post(`${BASE_URL}/pages`, data, {
+    const response = await axios.post(`${BASE_URL}/api/pages`, data, {
       withCredentials: true,
     });
     return response.data;
@@ -739,7 +739,7 @@ export const createPage = async (data) => {
 
 export const updatePage = async (id, data) => {
   try {
-    const response = await axios.put(`${BASE_URL}/pages/${id}`, data, {
+    const response = await axios.put(`${BASE_URL}/api/pages/${id}`, data, {
       withCredentials: true,
     });
     return response.data;
@@ -751,7 +751,7 @@ export const updatePage = async (id, data) => {
 
 export const deletePage = async (id) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/pages/${id}`, {
+    const response = await axios.delete(`${BASE_URL}/api/pages/${id}`, {
       withCredentials: true,
     });
     return response.data;
@@ -766,7 +766,7 @@ export const uploadImage = async (file) => {
   const formData = new FormData();
   formData.append("file", file); // 'file' با upload.single("file") هم‌خوانی داره
 
-  const response = await axios.post(`${BASE_URL}/upload`, formData, {
+  const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -779,7 +779,7 @@ export const uploadImage = async (file) => {
 
 export const sendContactMessage = async (data) => {
   try {
-    const res = await axios.post(`${BASE_URL}/contact`, data);
+    const res = await axios.post(`${BASE_URL}/api/contact`, data);
 
     return res.data;
   } catch (err) {
@@ -788,19 +788,19 @@ export const sendContactMessage = async (data) => {
   }
 };
 export const getContactMessages = async () => {
-  const res = await axios.get(`${BASE_URL}/contact`);
+  const res = await axios.get(`${BASE_URL}/api/contact`);
   return res.data.data;
 };
 
 export const getContactMessageById = async (id) => {
-  const res = await axios.get(`${BASE_URL}/contact/${id}`);
+  const res = await axios.get(`${BASE_URL}/api/contact/${id}`);
 
   return res.data.data;
 };
 
 export const deleteContactMessage = async (id) => {
   try {
-    const res = await axios.delete(`${BASE_URL}/contact/${id}`);
+    const res = await axios.delete(`${BASE_URL}/api/contact/${id}`);
     return res.data;
   } catch (err) {
     console.error("خطا در حذف پیام تماس:", err);
@@ -811,7 +811,7 @@ export const deleteContactMessage = async (id) => {
 export const resendVerificationEmail = async (email) => {
 
   const response = await axios.post(
-    `${BASE_URL}/auth/resend-verification`,
+    `${BASE_URL}/api/auth/resend-verification`,
     { email },
     {
       withCredentials: true,
@@ -820,7 +820,7 @@ export const resendVerificationEmail = async (email) => {
   return response.data;
 };
 export const verifyEmail = async (token) => {
-  const response = await axios.get(`${BASE_URL}/auth/verify-email`, {
+  const response = await axios.get(`${BASE_URL}/api/auth/verify-email`, {
     params: { token },
     withCredentials: true,
   });

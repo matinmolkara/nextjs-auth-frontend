@@ -113,7 +113,7 @@ useEffect(() => {
 
     try {
       const res = await axios.put(
-        `${BASE_URL}/auth/update-profile`,
+        `${BASE_URL}/api/auth/update-profile`,
         dataToUpdate,
         { withCredentials: true }
       );
