@@ -6,7 +6,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // api.js
 export const getProducts = async (filters = {}) => {
-  let url = `${BASE_URL}/products`;
+  let url = `${BASE_URL}/api/products`;
   const params = new URLSearchParams();
 
   if (filters.search) params.append("search", filters.search);
