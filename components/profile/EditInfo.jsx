@@ -7,6 +7,7 @@ import axios from "axios";
 
 
 const EditInfo = () => {
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   const { user, fetchUser } = useAuth(); 
   const [formData, setFormData] = useState({
   
@@ -112,7 +113,7 @@ useEffect(() => {
 
     try {
       const res = await axios.put(
-        "http://localhost:5000/api/auth/update-profile",
+        `${BASE_URL}/auth/update-profile`,
         dataToUpdate,
         { withCredentials: true }
       );

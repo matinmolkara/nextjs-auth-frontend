@@ -6,7 +6,9 @@ import { useCartContext } from "@/context/cartContext";
 import { useRouter } from "next/navigation";
 import styles from "../../../../styles/components/Address.module.css";
 
-const OrderVerifyPage = () => {
+const OrderVerifyPage = () => {   
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
   const { cartItems, clearCart } = useCartContext();
   const { addresses } = useContext(ProductContext);
   const router = useRouter();
@@ -23,8 +25,9 @@ const OrderVerifyPage = () => {
   }, [cartItems, selectedAddress, router]);
 
   const handlePlaceOrder = async () => {
+ 
     try {
-      const response = await fetch("http://localhost:5000/api/orders", {
+      const response = await fetch(`${BASE_URL}/orders`, {
         method: "POST",
         credentials: "include",
         headers: {

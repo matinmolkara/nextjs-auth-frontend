@@ -1,7 +1,8 @@
 // api.js
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/api"; // URL بک‌اند خود را وارد کنید
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+ // URL بک‌اند خود را وارد کنید
 
 // api.js
 export const getProducts = async (filters = {}) => {
@@ -480,7 +481,7 @@ export const getProductById = async (productId) => {
   }
 };
 export const getOrCreateGuestCart = async () => {
-  const res = await axios.get("http://localhost:5000/api/cart", {
+  const res = await axios.get(`${BASE_URL}/cart`, {
     withCredentials: true,
   });
   return res.data;

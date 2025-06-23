@@ -32,14 +32,15 @@ const Navbar = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   useEffect(() => {
     const fetchCategories = async () => {
+
       try {
         // آدرس API شما برای دریافت همه دسته‌بندی‌ها
         // مطمئن شوید که این آدرس صحیح است
         const res = await fetch(
-          "http://localhost:5000/api/categories?all=true"
+          `${BASE_URL}/categories?all=true`
         ); // مثال: فرض کنید API شما در مسیر /api/categories قرار دارد
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);

@@ -10,6 +10,7 @@ const CheckoutSubmitButton = ({
   calculatedShippingCost,
   orderNotes,
 }) => {
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
   const { addresses } = useContext(ProductContext);
   const { cartId, clearCart, isCartLoading } = useCartContext(); // cartItems حذف شد چون استفاده نمی‌شه
@@ -36,7 +37,7 @@ const CheckoutSubmitButton = ({
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/orders", {
+      const response = await fetch(`${BASE_URL}/orders`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -56,7 +57,7 @@ const CheckoutSubmitButton = ({
       if (response.ok) {
         if (paymentMethod === "online") {
           const gatewayRes = await fetch(
-            "http://localhost:5000/api/payments/initiate",
+            `${BASE_URL}/payments/initiate`,
             {
               method: "POST",
               credentials: "include",

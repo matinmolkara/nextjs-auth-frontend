@@ -7,12 +7,14 @@ import { mergeGuestCart } from "@/app/api/api";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
   const router = useRouter();
   const [user, setUser] = useState(null);
   
   const fetchUser = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/auth/me", {
+      const res = await axios.get(`${BASE_URL}/api/auth/me`, {
         withCredentials: true,
       });
       setUser(res.data);
@@ -25,7 +27,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${BASE_URL}/api/auth/login`,
         {
           email,
           password,
@@ -54,7 +56,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await axios.post(
-        "http://localhost:5000/api/auth/logout",
+        `${BASE_URL}/api/auth/logout`,
         {},
         { withCredentials: true }
       );
@@ -69,7 +71,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (email, password, name) => {
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
+      await axios.post(`${BASE_URL}/api/auth/register`, {
         // Corrected registration route
         email,
         password,
