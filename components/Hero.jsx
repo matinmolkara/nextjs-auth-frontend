@@ -4,11 +4,11 @@ import Image from 'next/image';
 import heroImg from '../public/images/hero/background-hero.png';
 
 const Hero = ({ title, subtitle, image }) => {
-  const fullImageUrl = `${process.env.NEXT_PUBLIC_IMAGE_BASE}${image}`;
+  // const fullImageUrl = `${process.env.NEXT_PUBLIC_IMAGE_BASE}${image}`;
 
   return (
     <div className={styles.hero}>
-      <Image src={fullImageUrl} alt="hero" fill />
+      <Image src="/images/hero/background-hero.png" alt="hero" fill />
       <div className={styles.heroDetail}>
         <div className="container">
           <div className="row">
