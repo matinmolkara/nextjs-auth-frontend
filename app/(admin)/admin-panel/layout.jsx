@@ -1,11 +1,9 @@
 "use client";
+import ProtectedRoute from "@/components/ProtectedRoute";
 export default function AdminLayout({ children }) {
   return (
-
-      <div className="admin-layout">
-        {/* اگر بخواهی سایدبار/ناوبری اضافه کنی، اینجاست */}
-        {children}
-      </div>
- 
+    <div className="admin-layout">
+      <ProtectedRoute adminOnly>{children}</ProtectedRoute>
+    </div>
   );
 }

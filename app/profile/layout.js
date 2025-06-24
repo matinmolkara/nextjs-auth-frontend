@@ -1,12 +1,8 @@
-
+"use client";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import "../../styles/profile.css";
-export default function ProfileLayout({
-  children, // will be a page or nested layout
-}) {
+export default function ProfileLayout({children}) {
   return (
-    <section>
- 
-      {children}
-    </section>
+    <ProtectedRoute>{children}</ProtectedRoute>
   );
 }
