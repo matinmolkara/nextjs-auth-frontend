@@ -3,7 +3,7 @@ import { useAuth } from "@/context/authContext";
 import { useRouter, usePathname } from "next/navigation";
 import React ,{useEffect} from "react";
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
