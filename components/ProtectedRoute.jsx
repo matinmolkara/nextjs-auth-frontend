@@ -5,6 +5,8 @@ import React ,{useEffect,useState} from "react";
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
