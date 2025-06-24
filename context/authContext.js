@@ -18,9 +18,10 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true,
       });
       setUser(res.data);
- 
+      return res.data;
     } catch {
       setUser(null);
+      return null;
     }
   };
 
@@ -45,7 +46,10 @@ export const AuthProvider = ({ children }) => {
       }
 
       const userData = await fetchUser(); // 👈 نتیجه fetchUser را برگردان
-      return userData; // ✅ کاربر برگشت داده میشه
+      // return userData; // ✅ کاربر برگشت داده میشه
+      if (userData) {
+        router.push(userData.role === "admin" ? "/dashboard" : "/profile");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
