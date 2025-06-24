@@ -1,7 +1,7 @@
 "use client";
 import { useAuth } from "@/context/authContext";
 import { useRouter, usePathname } from "next/navigation";
-import React ,{useEffect} from "react";
+import React ,{useEffect,useState} from "react";
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user } = useAuth();
