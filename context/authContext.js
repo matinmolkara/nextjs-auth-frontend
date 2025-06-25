@@ -11,16 +11,20 @@ export const AuthProvider = ({ children }) => {
 
   const router = useRouter();
   const [user, setUser] = useState(null);
-  
+  const [isLoading, setIsLoading] = useState(true);
+
   const fetchUser = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.get(`${BASE_URL}/api/auth/me`, {
         withCredentials: true,
       });
       setUser(res.data);
- 
-    } catch {
+    } catch (error) {
+      console.log("User not authenticated"); // ✅ تغییر console.error به log
       setUser(null);
+    } finally {
+      setIsLoading(false); // ✅ پایان loading
     }
   };
 
@@ -44,8 +48,11 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("guestCart");
       }
 
-      const userData = await fetchUser(); // 👈 نتیجه fetchUser را برگردان
-      return userData; // ✅ کاربر برگشت داده میشه
+      // const userData = await fetchUser(); // 👈 نتیجه fetchUser را برگردان
+      // return userData; // ✅ کاربر برگشت داده میشه
+
+      await fetchUser();
+      return user;
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
@@ -55,6 +62,8 @@ export const AuthProvider = ({ children }) => {
   
   const logout = async () => {
     try {
+      setIsLoading(true);
+      setUser(null);
       await axios.post(
         `${BASE_URL}/api/auth/logout`,
         {},
@@ -64,8 +73,11 @@ export const AuthProvider = ({ children }) => {
       router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
-      // Handle logout error, e.g., set an error state
-      alert("خطا در خروج از حساب کاربری.");
+      // ✅ حتی اگر خطا داشت، user را null کن
+      setUser(null);
+      router.push("/");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,7 +104,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, register,fetchUser , isAuthenticated: !!user }}
+      value={{ user, login, logout, register,fetchUser, isLoading , isAuthenticated: !!user }}
     >
       {children}
     </AuthContext.Provider>

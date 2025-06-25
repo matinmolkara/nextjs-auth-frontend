@@ -4,33 +4,44 @@ import { useRouter, usePathname } from "next/navigation";
 import React ,{useEffect,useState} from "react";
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
+  const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
-    if (user === null) return;
+    if (isLoading) return;
 
     // کاربر غیر لاگین → بره لاگین
     if (!user) {
       router.replace("/users/login");
+      return;
     }
 
-    // کاربر یوزر ولی مسیر ادمین اومده → بره profile
-    else if (user.role === "user" && pathname.startsWith("/admin-panel")) {
+    // ✅ کاربر عادی به صفحه ادمین دسترسی داره → برو profile
+    if (adminOnly && user.role !== "admin") {
       router.replace("/profile");
+      return;
     }
 
-    // کاربر ادمین ولی مسیر profile اومده → بره داشبورد
-    else if (user.role === "admin" && pathname.startsWith("/profile")) {
+    // ✅ کاربر عادی به مسیر ادمین دسترسی داره → برو profile
+    if (user.role === "user" && pathname.startsWith("/admin-panel")) {
+      router.replace("/profile");
+      return;
+    }
+
+    // ✅ کاربر ادمین به profile رفته → برو dashboard
+    if (user.role === "admin" && pathname.startsWith("/profile")) {
       router.replace("/admin-panel/dashboard");
+      return;
     }
 
-    setLoading(false);
-  }, [user, pathname]);
+    // ✅ همه چیز درسته، صفحه رو نمایش بده
+    setShouldRender(true);
+  }, [user, isLoading, pathname, adminOnly, router]);
 
-  if (loading || !user) {
+  // ✅ تا زمانی که user load نشده یا redirect در حال انجامه، loading نشان بده
+  if (isLoading || !shouldRender) {
     return (
       <div style={{ textAlign: "center", marginTop: "2rem" }}>
         در حال بررسی سطح دسترسی...
@@ -41,4 +52,4 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
   return children;
 };
 
-export default ProtectedRoute
+export default ProtectedRoute;
