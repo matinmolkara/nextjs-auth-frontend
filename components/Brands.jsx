@@ -131,21 +131,7 @@ const Brands = () => {
                                 <i className="bi bi-star-fill"></i>
                                 <i className="bi bi-star"></i>
                               </div>
-                              {/* <div
-                                className={gridStyles.brandCartFirstOffPercent}
-                              >
-                                <span className={gridStyles.brandCartPrice}>
-                                  {item.price}
-                                </span>
-                                <span className={gridStyles.brandCartRealPrice}>
-                                  {item.real_price}
-                                </span>
-                                <span
-                                  className={gridStyles.brandCartOffPercent}
-                                >
-                                  {item.discount}
-                                </span>
-                              </div> */}
+                           
 
                               <div
                                 className={gridStyles.brandCartFirstOffPercent}
@@ -188,7 +174,7 @@ const Brands = () => {
 
 
                               <button className="btn btn-dark">
-                                <Link href="#">
+                                <Link href={`/productlist/${item.id}`}>
                                   <i className="bi bi-arrow-left-short text-white"></i>
                                 </Link>
                               </button>
