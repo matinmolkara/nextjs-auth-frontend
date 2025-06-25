@@ -30,7 +30,7 @@ const Featured = () => {
           {products.map((product) => (
             <div key={product.id} className="col-12 col-lg-6 col-xl-4">
               <Link
-                href={`/product/${product.slug || product.id}`}
+                href={`/productlist/${product.slug || product.id}`}
                 className={styles.featuredCardLink}
               >
                 <div className={styles.featuredCard}>
