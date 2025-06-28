@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { supabase } from "@/app/lib/supabaseClient";
+import Link from "next/link";
 import {
   getPageBySlug,
   updatePage,
@@ -126,27 +128,82 @@ export default function HomePageEditPage() {
     setTimeout(() => setMessage(""), 3000);
   };
 
-  const handleImageUpload = async (cb) => {
+
+
+
+ const handleImageUpload = async (cb) => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*";
+
     fileInput.onchange = async (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
-      const path = await uploadImage(file);
 
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${file.name}`;
+      const filePath = `homepage/${fileName}`;
 
-      cb(path);
+      const { error } = await supabase.storage
+        .from("product-images") // ← bucket ثابت یا جدا برای تصاویر UI
+        .upload(filePath, file);
+
+      if (error) {
+        console.error("خطا در آپلود:", error.message);
+        alert("آپلود ناموفق بود");
+        return;
+      }
+
+      const { data } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(filePath);
+
+      cb(data.publicUrl); // ← آدرس نهایی رو به callback بده
     };
+
     fileInput.click();
   };
+
+
+
+
+
+
+
+
+
+
+
+
+  // const handleImageUpload = async (cb) => {
+  //   const fileInput = document.createElement("input");
+  //   fileInput.type = "file";
+  //   fileInput.accept = "image/*";
+  //   fileInput.onchange = async (e) => {
+  //     const file = e.target.files?.[0];
+  //     if (!file) return;
+  //     const path = await uploadImage(file);
+
+
+  //     cb(path);
+  //   };
+  //   fileInput.click();
+  // };
 
   if (loading) return <div className="p-5 text-center">در حال بارگذاری...</div>;
 
   return (
     <div className="container py-4">
-      <h2 className="mb-4">🎛 ویرایش صفحه اصلی</h2>
+
+
       {message && <div className="alert alert-success">{message}</div>}
+
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3>🎛 ویرایش صفحه اصلی </h3>
+        <Link href="/admin-panel/dashboard" className="btn btn-outline-dark">
+          <i className="bi bi-house-door me-1"></i> بازگشت به داشبورد
+        </Link>
+      </div>
 
       {/* HERO */}
       <section className="mb-4 border rounded p-3">

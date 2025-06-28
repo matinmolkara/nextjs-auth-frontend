@@ -5,18 +5,25 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      process.env.NODE_ENV === "development"
-        ? {
-            protocol: "http",
-            hostname: "localhost",
-            port: "5000",
-            pathname: "/uploads/**",
-          }
-        : {
-            protocol: "https",
-            hostname: "nextjs-auth-backend.onrender.com",
-            pathname: "/uploads/**",
-          },
+      // برای حالت توسعه
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "5000",
+        pathname: "/uploads/**",
+      },
+      // فایل‌های آپلود شده روی بک‌اند
+      {
+        protocol: "https",
+        hostname: "nextjs-auth-backend.onrender.com",
+        pathname: "/uploads/**",
+      },
+      // 👇 اضافه شده برای فایل‌های Supabase
+      {
+        protocol: "https",
+        hostname: "kazcgjoncnemsnizbmfg.supabase.co",
+        pathname: "/storage/v1/object/public/product-images/**",
+      },
     ],
   },
 };

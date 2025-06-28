@@ -5,7 +5,7 @@ import Image from "next/image";
 
 const Services = ({ items }) => {
 
-const fullImageUrl = `${process.env.NEXT_PUBLIC_IMAGE_BASE}`;
+// const fullImageUrl = `${process.env.NEXT_PUBLIC_IMAGE_BASE}`;
   return (
     <>
       <div className={styles.services}>
@@ -17,7 +17,7 @@ const fullImageUrl = `${process.env.NEXT_PUBLIC_IMAGE_BASE}`;
                   <div className={styles.servicesCardDetail}>
                     <div className={styles.servicesCardDetailImage}>
                       <Image
-                        src={`${fullImageUrl}${service.image}`}
+                        src={service.image}
                         alt={service.alt || "تصویر"}
                         width={89}
                         height={89}

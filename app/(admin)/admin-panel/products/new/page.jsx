@@ -7,6 +7,8 @@ import Image from "next/image";
 import Section from "@/components/admin/products/Section";
 import { addProduct } from "@/app/api/api";
 import Link from "next/link";
+import { supabase } from "@/app/lib/supabaseClient";
+import { useRouter } from "next/navigation";
 const AddProductPage = () => {
 ;
   const {
@@ -15,7 +17,7 @@ const AddProductPage = () => {
     sizes: mockSizesFromContext, // تغییر نام برای جلوگیری از تداخل
     colors: mockColorsFromContext, // تغییر نام برای جلوگیری از تداخل
   } = useContext(ProductContext);
-
+  const router = useRouter();
 
 
   
@@ -112,26 +114,70 @@ const AddProductPage = () => {
     );
   };
 
-  // مدیریت آپلود تصاویر
-  const handleImageUpload = (event) => {
+  // // مدیریت آپلود تصاویر
+  // const handleImageUpload = (event) => {
+  //   const files = Array.from(event.target.files);
+  //   // اینجا می‌توانید محدودیت‌هایی برای تعداد یا حجم فایل‌ها اعمال کنید
+  //   const newImages = files.filter(
+  //     (file) =>
+  //       !productImages.some((existingFile) => existingFile.name === file.name)
+  //   ); // جلوگیری از انتخاب تکراری با نام یکسان
+  //   setProductImages((prevImages) => [...prevImages, ...newImages]);
+  //   if (formErrors.productImages && newImages.length > 0) {
+  //     setFormErrors((prev) => ({ ...prev, productImages: null }));
+  //   }
+  // };
+
+
+
+
+  const handleImageUpload = async (event) => {
     const files = Array.from(event.target.files);
-    // اینجا می‌توانید محدودیت‌هایی برای تعداد یا حجم فایل‌ها اعمال کنید
-    const newImages = files.filter(
-      (file) =>
-        !productImages.some((existingFile) => existingFile.name === file.name)
-    ); // جلوگیری از انتخاب تکراری با نام یکسان
-    setProductImages((prevImages) => [...prevImages, ...newImages]);
-    if (formErrors.productImages && newImages.length > 0) {
-      setFormErrors((prev) => ({ ...prev, productImages: null }));
+    const uploadedUrls = [];
+
+    for (const file of files) {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${file.name}`;
+      const filePath = `products/${fileName}`;
+
+      const { error } = await supabase.storage
+        .from("product-images")
+        .upload(filePath, file);
+
+      if (error) {
+        console.error("خطا در آپلود:", error.message);
+        continue;
+      }
+
+      const { data } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(filePath);
+
+      uploadedUrls.push({
+        name: file.name,
+        url: data.publicUrl,
+      });
+    }
+
+    if (uploadedUrls.length > 0) {
+      setProductImages((prev) => [...prev, ...uploadedUrls]);
+      if (formErrors.productImages) {
+        setFormErrors((prev) => ({ ...prev, productImages: null }));
+      }
     }
   };
 
+  // const handleRemoveImage = (imageName) => {
+  //   setProductImages((prevImages) =>
+  //     prevImages.filter((img) => img.name !== imageName)
+  //   );
+  // };
   const handleRemoveImage = (imageName) => {
     setProductImages((prevImages) =>
       prevImages.filter((img) => img.name !== imageName)
     );
   };
-
+  
   // اعتبارسنجی فرم
   const validateForm = () => {
     const errors = {};
@@ -729,6 +775,7 @@ const AddProductPage = () => {
               </div>
             )}
           </div>
+
           {productImages.length > 0 && (
             <div className="mt-3">
               <h6>تصاویر انتخاب شده:</h6>
@@ -737,7 +784,7 @@ const AddProductPage = () => {
                   <div key={index} className="col-6 col-sm-4 col-md-3 col-lg-2">
                     <div className="card h-100 position-relative shadow-sm">
                       <Image
-                        src={URL.createObjectURL(image)}
+                        src={image.url}
                         alt={`پیش‌نمایش ${image.name}`}
                         className="card-img-top"
                         style={{ height: "100px", objectFit: "cover" }}
@@ -755,7 +802,6 @@ const AddProductPage = () => {
                         onClick={() => handleRemoveImage(image.name)}
                         title="حذف تصویر"
                       >
-                        {/* <Trash2Icon style={{ width: '12px', height: '12px' }}/> یا <i className="bi bi-trash small"></i> */}
                         <i className="bi bi-trash small"></i>
                       </button>
                       <div className="card-footer p-1">
@@ -811,10 +857,11 @@ const AddProductPage = () => {
         <div className="mt-4 pt-3 border-top d-flex justify-content-end">
           <button
             type="button"
-            onClick={(e) => handleSubmit(e, true)}
-            className="btn btn-outline-secondary me-2"
+            onClick={() => router.push("/admin-panel/products")}
+            className="btn btn-danger d-flex align-items-center me-3"
           >
-            ذخیره پیش‌نویس
+            <i className="bi bi-x-circle me-1"></i>
+            لغو
           </button>
           <button
             type="submit"

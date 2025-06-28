@@ -11,7 +11,7 @@ const Advertise = ({ banners = [] }) => {
   return (
     <div className={styles.advertise}>
       {banners.map((item, i) => {
-        const imageUrl = item.img.startsWith("http")
+        const imageUrl = item.img.startsWith("https")
           ? item.img
           : `${BASE_URL}${item.img}`; // ترکیب دامنه و مسیر
 

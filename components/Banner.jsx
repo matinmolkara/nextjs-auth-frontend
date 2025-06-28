@@ -15,7 +15,7 @@ const Banner = ({ items }) => {
         {items.map((item, index) => (
           <Link key={index} href={item.href} className={styles.bannerCart}>
             <Image
-              src={`${fullImageUrl}${item.imgSrc}`}
+              src={item.imgSrc}
               alt={item.imgAlt || "تصویر"}
               width={418}
               height={418}

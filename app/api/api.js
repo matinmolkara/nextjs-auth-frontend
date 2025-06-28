@@ -762,20 +762,20 @@ export const deletePage = async (id) => {
 }
 
 
-export const uploadImage = async (file) => {
-  const formData = new FormData();
-  formData.append("file", file); // 'file' با upload.single("file") هم‌خوانی داره
+// export const uploadImage = async (file) => {
+//   const formData = new FormData();
+//   formData.append("file", file); // 'file' با upload.single("file") هم‌خوانی داره
 
-  const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+//   const response = await axios.post(`${BASE_URL}/api/upload`, formData, {
+//     headers: {
+//       "Content-Type": "multipart/form-data",
+//     },
+//   });
 
-  const data = response.data;
-  if (!data.success) throw new Error("آپلود تصویر ناموفق بود");
-  return data.path;
-};
+//   const data = response.data;
+//   if (!data.success) throw new Error("آپلود تصویر ناموفق بود");
+//   return data.path;
+// };
 
 export const sendContactMessage = async (data) => {
   try {
