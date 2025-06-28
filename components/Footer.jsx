@@ -130,7 +130,7 @@ const Footer = () => {
         </div>
       </div>
       <div className={styles.footer2}>
-        <p>© کپی رایت 1403. همه حقوق محقوظ است.</p>
+        <p>© کپی رایت 1404. همه حقوق محقوظ است.</p>
       </div>
     </footer>
   );
