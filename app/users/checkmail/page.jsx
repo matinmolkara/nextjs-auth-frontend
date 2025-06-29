@@ -6,7 +6,7 @@ import styles from "../../../styles/components/Login.module.css";
 import { resendVerificationEmail } from "@/app/api/api";
 import { useSearchParams } from "next/navigation";
 import { useError } from "@/context/ErrorContext";
-import { handleApiError } from "@/app/lib/errorHandler";
+import { handleApiError } from "@/utils/errorHandler";
 import { ERROR_CODES } from "@/app/lib/errors";
 import ErrorDisplay from "@/components/ErrorDisplay";
 
