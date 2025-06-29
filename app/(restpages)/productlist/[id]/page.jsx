@@ -10,7 +10,7 @@ import ProductDetails from "@/components/product/ProductDetails";
 import ProductOptions from "@/components/product/ProductOptions";
 import AddToCart from "@/components/product/AddToCart";
 import ProductTabs from "@/components/product/ProductTabs";
-
+import Link from "next/link";
 const Page = () => {
   const {
     products,
@@ -43,7 +43,18 @@ const Page = () => {
   }, [pathname,getProductById,products]);
 
   if (!product) {
-    return <p>محصول یافت نشد!</p>;
+    return (
+      <div className="d-flex flex-column align-items-center justify-content-center py-5">
+        <div className="fs-1 mb-4">🔍</div>
+        <h2 className="h2 fw-semibold text-dark mb-2">محصول یافت نشد!</h2>
+        <p className="text-muted mb-4 text-center">
+          متأسفانه محصول مورد نظر شما در حال حاضر موجود نیست.
+        </p>
+        <Link href="/productlist" className="btn btn-primary btn-lg px-4 py-2">
+          مشاهده سایر محصولات
+        </Link>
+      </div>
+    );
   }
 
   return (

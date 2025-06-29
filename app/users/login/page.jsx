@@ -1,3 +1,4 @@
+// components/login/Login.js - نسخه نهایی با ساختار شما
 "use client";
 import { useState } from "react";
 import { useAuth } from "@/context/authContext";
@@ -6,47 +7,57 @@ import LoginHeader from "@/components/login/LoginHeader";
 import Link from "next/link";
 import LoginFrame from "@/components/login/LoginFrame";
 import { useRouter } from "next/navigation";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { ERROR_CODES } from "@/app/lib/errors"
+import ErrorDisplay from "@/components/ErrorDisplay";
 
 const Login = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(""); // ✅ نمایش خطا
   const router = useRouter();
+
+  // استفاده از سیستم error handling یکپارچه
+  const { error, loading, handleAsync, clearError } = useErrorHandler();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+
+    // Basic validation
+    if (!email || !password) {
+      return;
+    }
+
     try {
-      const user = await login(email, password); // 👈 کاربر برگشت داده شد
-      // بر اساس نقش redirect کن
+      // استفاده از handleAsync برای مدیریت خطا
+      const user = await handleAsync(() => login(email, password));
+
+      // موفقیت‌آمیز - redirect
       if (user?.role === "admin") {
         router.push("/admin-panel/dashboard");
       } else {
-        router.push("/"); // 👈 یا "/home" یا صفحه دلخواه
+        router.push("/");
       }
-    } catch (error) {
-      const message = error.response?.data?.message || "خطایی رخ داده است.";
-
-      if (message.includes("ایمیل خود را تایید کنید")) {
+    } catch (handledError) {
+      // خطاهای خاص که نیاز به عملکرد ویژه دارند
+      if (handledError.code === ERROR_CODES.EMAIL_NOT_VERIFIED) {
         router.push(`/users/checkmail?email=${email}`);
-      } else if (
-        message.includes("کاربر یافت نشد") ||
-        message.includes("رمز عبور نادرست")
-      ) {
-        setError("ایمیل یا رمز عبور اشتباه است.");
-      } else {
-        setError(message);
       }
+      // بقیه خطاها در ErrorDisplay نمایش داده می‌شوند
     }
   };
-  
+
+  const handleRetry = () => {
+    clearError();
+    handleLogin({ preventDefault: () => {} });
+  };
 
   return (
     <LoginFrame>
       <form className="row g-3" onSubmit={handleLogin}>
         <LoginHeader title="ورود به سایت" />
+
         <div className="col-12 mb-3">
           <label
             htmlFor="inputEmail4"
@@ -57,12 +68,19 @@ const Login = () => {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={`form-control ${styles.formControl}`}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              clearError(); // پاک کردن خطا هنگام تایپ
+            }}
+            className={`form-control ${styles.formControl} ${
+              error ? "is-invalid" : ""
+            }`}
             id="inputEmail4"
             placeholder="ایمیل خود را وارد کنید"
+            disabled={loading}
           />
         </div>
+
         <div className="col-12">
           <label
             htmlFor="inputPassword4"
@@ -74,10 +92,16 @@ const Login = () => {
             <input
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`form-control ${styles.formControl}`}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                clearError();
+              }}
+              className={`form-control ${styles.formControl} ${
+                error ? "is-invalid" : ""
+              }`}
               id="inputPassword4"
               placeholder="رمز عبور را وارد کنید"
+              disabled={loading}
             />
             <span
               className="position-absolute top-50 end-0 translate-middle-y me-3"
@@ -89,12 +113,8 @@ const Login = () => {
           </div>
         </div>
 
-        {error && (
-          <div className="col-12">
-            <p className="text-danger text-center">{error}</p>{" "}
-            {/* ✅ نمایش پیام خطا */}
-          </div>
-        )}
+        {/* جایگزین {error && <div>...} قدیمی */}
+        <ErrorDisplay error={error} onRetry={handleRetry} />
 
         <div className="col-12 d-flex">
           <div className={styles.forgotLink}>
@@ -103,14 +123,28 @@ const Login = () => {
             </Link>
           </div>
         </div>
+
         <div className="col-12 d-flex justify-content-center">
           <button
             type="submit"
             className={`btn btn-primary ${styles.btnPrimary}`}
+            disabled={loading || !email || !password}
           >
-            ورود به سایت
+            {loading ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                در حال ورود...
+              </>
+            ) : (
+              "ورود به سایت"
+            )}
           </button>
         </div>
+
         <div className="col-12">
           <div className="col-12 d-flex justify-content-center">
             هنوز ثبت نام نکردید؟

@@ -826,3 +826,38 @@ export const verifyEmail = async (token) => {
   });
   return response.data;
 };
+
+
+// lib/api.js
+class ApiError extends Error {
+  constructor(message, status, code) {
+    super(message)
+    this.status = status
+    this.code = code
+  }
+}
+
+export async function apiRequest(url, options = {}) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    })
+
+    if (!response.ok) {
+      throw new ApiError(
+        `HTTP error! status: ${response.status}`,
+        response.status,
+        'HTTP_ERROR'
+      )
+    }
+
+    return await response.json()
+  } catch (error) {
+    if (error instanceof ApiError) throw error
+    throw new ApiError('Network error', 0, 'NETWORK_ERROR')
+  }
+}

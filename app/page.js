@@ -15,8 +15,8 @@ export default async function Home() {
 
 
   return (
-    <div>
-      <main>
+    <div >
+      <main >
         {content.hero && <Hero {...content.hero} />}
         {content.banner && <Banner items={content.banner} />}
         <SectionTitle title="محبوب ترین برندها" />

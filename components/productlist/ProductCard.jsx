@@ -7,7 +7,18 @@ import Link from "next/link";
 
 const ProductCard = ({ product }) => {
   if (!product) {
-    return <div>محصول یافت نشد.</div>;
+    return (
+      <div className="d-flex flex-column align-items-center justify-content-center py-5">
+        <div className="fs-1 mb-4">🔍</div>
+        <h2 className="h2 fw-semibold text-dark mb-2">محصول یافت نشد!</h2>
+        <p className="text-muted mb-4 text-center">
+          متأسفانه محصول مورد نظر شما در حال حاضر موجود نیست.
+        </p>
+        <Link href="/productlist" className="btn btn-primary btn-lg px-4 py-2">
+          مشاهده سایر محصولات
+        </Link>
+      </div>
+    );
   }
   const { id, title, price, real_price, discount, special_offer, image_urls } =
     product;

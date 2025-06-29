@@ -3,6 +3,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { mergeGuestCart } from "@/app/api/api";
+import { useError } from "@/context/ErrorContext";
+import { handleApiError } from "../utils/errorHandler"
 
 export const AuthContext = createContext();
 
@@ -12,6 +14,7 @@ export const AuthProvider = ({ children }) => {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { addError } = useError(); // استفاده از error context
 
   const fetchUser = async () => {
     try {
@@ -21,10 +24,10 @@ export const AuthProvider = ({ children }) => {
       });
       setUser(res.data);
     } catch (error) {
-      console.log("User not authenticated"); // ✅ تغییر console.error به log
+      console.log("User not authenticated");
       setUser(null);
     } finally {
-      setIsLoading(false); // ✅ پایان loading
+      setIsLoading(false);
     }
   };
 
@@ -48,18 +51,16 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("guestCart");
       }
 
-      // const userData = await fetchUser(); // 👈 نتیجه fetchUser را برگردان
-      // return userData; // ✅ کاربر برگشت داده میشه
-
       await fetchUser();
       return user;
     } catch (error) {
       console.error("Login failed:", error);
-      throw error;
+      const processedError = handleApiError(error);
+      addError(processedError); // نمایش خطا به جای alert
+      throw processedError;
     }
   };
-  
-  
+
   const logout = async () => {
     try {
       setIsLoading(true);
@@ -73,7 +74,9 @@ export const AuthProvider = ({ children }) => {
       router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
-      // ✅ حتی اگر خطا داشت، user را null کن
+      const processedError = handleApiError(error);
+      addError(processedError);
+      // حتی اگر خطا داشت، user را null کن
       setUser(null);
       router.push("/");
     } finally {
@@ -84,17 +87,16 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, password, name) => {
     try {
       await axios.post(`${BASE_URL}/api/auth/register`, {
-        // Corrected registration route
         email,
         password,
         name,
       });
-      // await login(email, password);
       router.push(`/users/checkmail?email=${email}`);
     } catch (error) {
       console.error("Registration failed:", error);
-      // Handle registration error, e.g., set an error state
-      alert("ثبت‌نام ناموفق. لطفاً اطلاعات را بررسی کنید.");
+      const processedError = handleApiError(error);
+      addError(processedError); // نمایش خطا به جای alert
+      throw processedError; // خطا را throw کن تا component بتواند handle کند
     }
   };
 
@@ -104,7 +106,15 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, register,fetchUser, isLoading , isAuthenticated: !!user }}
+      value={{
+        user,
+        login,
+        logout,
+        register,
+        fetchUser,
+        isLoading,
+        isAuthenticated: !!user,
+      }}
     >
       {children}
     </AuthContext.Provider>
