@@ -5,7 +5,7 @@ import { verifyEmail } from "@/app/api/api";
 import LoginFrame from "@/components/login/LoginFrame";
 import LoginHeader from "@/components/login/LoginHeader";
 import { useError } from "@/context/ErrorContext";
-import { handleApiError } from "@/app/lib/errorHandler";
+import { handleApiError } from "@/utils/errorHandler";
 
 const VerifyEmailPage = () => {
   const [status, setStatus] = useState("در حال تایید...");
