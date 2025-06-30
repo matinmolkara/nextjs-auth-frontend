@@ -44,7 +44,7 @@ const CategoryAddPage = () => {
     try {
       const newCategory = await createCategory(categoryName, parent_id);
 
-      router.push("/category"); // بعد از ایجاد موفقیت‌آمیز به صفحه لیست دسته‌بندی‌ها برگرد
+      router.push("/admin-panel/category"); // بعد از ایجاد موفقیت‌آمیز به صفحه لیست دسته‌بندی‌ها برگرد
     } catch (err) {
       setError("در ایجاد دسته بندی خطایی رخ داده است.");
       console.error("Error creating category:", err);
