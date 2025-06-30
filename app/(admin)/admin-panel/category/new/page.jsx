@@ -17,7 +17,7 @@ const CategoryAddPage = () => {
     const fetchAllCategories = async () => {
       setLoading(true);
       try {
-        const categoriesData = await getCategories();
+        const categoriesData = await getCategories({ pageSize: 1000 });
         setAllCategories(categoriesData.categories);
       } catch (err) {
         setError("در دریافت لیست دسته‌بندی‌ها خطایی رخ داده است.");
