@@ -14,10 +14,7 @@ import Section from "@/components/admin/products/Section";
 import Link from "next/link";
 
 const EditProductPage = () => {
-
   const { productId } = useParams();
-
-
 
   const {
     categories,
@@ -29,7 +26,7 @@ const EditProductPage = () => {
   const [productToEdit, setProductToEdit] = useState(null);
   const [loading, setLoading] = useState(true);
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
-
+  const [attributesLoaded, setAttributesLoaded] = useState(false);
   // State ها
   const [productTitle, setProductTitle] = useState("");
   const [shortDescription, setShortDescription] = useState("");
@@ -68,7 +65,7 @@ const EditProductPage = () => {
       setApiError("");
       getProductById(productId)
         .then((data) => {
-    
+          console.log("Product data loaded:", data); // برای دیباگ
           setProductToEdit(data);
           setProductTitle(data.title || "");
           setShortDescription(data.description || "");
@@ -76,14 +73,6 @@ const EditProductPage = () => {
           setSelectedBrand(data.brand_id || "");
           setSelectedSizes(data.sizes || []); // فرض: data.sizes آرایه‌ای از ID هاست
           setSelectedColors(data.color_ids || []); // فرض: data.color_ids آرایه‌ای از ID هاست
-
-          if (data.descriptions && data.descriptions.length > 0) {
-            setDetailedDescriptionTitle(data.descriptions[0].title || "");
-            setDetailedDescriptionText(data.descriptions[0].content || "");
-          } else {
-            setDetailedDescriptionTitle("");
-            setDetailedDescriptionText("");
-          }
 
           setPrice(data.price ? String(data.price) : "");
           // برای تخفیف، باید نوع آن را هم از بک‌اند بگیرید یا منطقی برای تشخیص آن داشته باشید
@@ -121,8 +110,7 @@ const EditProductPage = () => {
               name: url.split("/").pop(), // فقط نام فایل
             }))
           );
-          
-          
+
           setInitialDataLoaded(true); // نشانگر بارگذاری اولیه اطلاعات
           setLoading(false);
         })
@@ -138,17 +126,32 @@ const EditProductPage = () => {
     }
   }, [productId]);
 
+  // useEffect جداگانه برای تنظیم توضیحات تفصیلی
+  useEffect(() => {
+    if (productToEdit && productToEdit.generalDescriptions) {
+      if (productToEdit.generalDescriptions.length > 0) {
+        setDetailedDescriptionTitle(
+          productToEdit.generalDescriptions[0].title || ""
+        );
+        setDetailedDescriptionText(
+          productToEdit.generalDescriptions[0].content || ""
+        );
+      } else {
+        setDetailedDescriptionTitle("");
+        setDetailedDescriptionText("");
+      }
+    }
+  }, [productToEdit]);
   // 2. بارگذاری ویژگی‌های دسته بندی هنگام تغییر دسته یا پس از بارگذاری اولیه محصول
   useEffect(() => {
-    if (!selectedCategory) {
-      setCommonAttributes([]);
-      setCustomAttributes([]);
-      setCommonFeatures({});
-      setCustomFeatures({});
+    if (!selectedCategory || !initialDataLoaded) {
       return;
     }
+
+    console.log("Loading category attributes for category:", selectedCategory);
     getCategoryAttributes(selectedCategory)
       .then((data) => {
+        console.log("Category attributes loaded:", data);
         const common = (data || []).filter((a) => !a.is_custom);
         const custom = (data || []).filter((a) => a.is_custom);
 
@@ -162,17 +165,46 @@ const EditProductPage = () => {
         custom.forEach((attr) => (customInit[attr.attribute_id] = "")); // از attr.id به attr.attribute_id در کد شما تغییر یافت
 
         // اگر اطلاعات محصول بارگذاری شده و ویژگی‌های محصول موجود است، آنها را پر کن
-        if (productToEdit && productToEdit.attributes) {
+        // سپس اگر اطلاعات ویژگی‌های محصول موجود است، آنها را پر کن
+        if (productToEdit.attributes && productToEdit.attributes.length > 0) {
+          console.log("Product attributes from API:", productToEdit.attributes);
+
           productToEdit.attributes.forEach((prodAttr) => {
-            if (commonInit.hasOwnProperty(prodAttr.attribute_id)) {
-              commonInit[prodAttr.attribute_id] = prodAttr.value;
-            } else if (customInit.hasOwnProperty(prodAttr.attribute_id)) {
-              customInit[prodAttr.attribute_id] = prodAttr.value;
+            // بر اساس نام ویژگی، attribute_id مربوطه را پیدا کن
+            const matchingCommonAttr = common.find(
+              (attr) => attr.name === prodAttr.name
+            );
+            const matchingCustomAttr = custom.find(
+              (attr) => attr.name === prodAttr.name
+            );
+
+            if (matchingCommonAttr) {
+              const attrId = matchingCommonAttr.attribute_id;
+              const attrValue = prodAttr.value || "";
+              commonInit[attrId] = attrValue;
+              console.log(
+                `Set common attribute ${attrId} (${prodAttr.name}) to:`,
+                attrValue
+              );
+            }
+
+            if (matchingCustomAttr) {
+              const attrId = matchingCustomAttr.attribute_id;
+              const attrValue = prodAttr.value || "";
+              customInit[attrId] = attrValue;
+              console.log(
+                `Set custom attribute ${attrId} (${prodAttr.name}) to:`,
+                attrValue
+              );
             }
           });
         }
+        console.log("Final common features:", commonInit);
+        console.log("Final custom features:", customInit);
+
         setCommonFeatures(commonInit);
         setCustomFeatures(customInit);
+        setAttributesLoaded(true);
       })
       .catch((err) => {
         console.error("خطا در دریافت ویژگی‌ها:", err);
@@ -225,20 +257,12 @@ const EditProductPage = () => {
     );
   };
 
-
-
-
   const handleRemoveExistingImage = (imageUrlToRemove) => {
     setExistingImages((prevImages) =>
       prevImages.filter((img) => img.url !== imageUrlToRemove)
     );
     setImagesToRemove((prev) => [...prev, imageUrlToRemove]);
   };
-  
-
-
-
-
 
   // اعتبارسنجی فرم
   const validateForm = () => {
@@ -308,7 +332,6 @@ const EditProductPage = () => {
       }
     );
 
-
     const descriptions = [];
     if (detailedDescriptionTitle.trim() || detailedDescriptionText.trim()) {
       descriptions.push({
@@ -341,9 +364,6 @@ const EditProductPage = () => {
       : productToEdit?.sizes || [];
     effectiveColors.forEach((id) => formData.append("color_ids", id));
     effectiveSizes.forEach((id) => formData.append("sizes", id));
-
-
-
 
     const effectiveAttributes = [];
 
@@ -378,20 +398,10 @@ const EditProductPage = () => {
       formData.append("attributes", JSON.stringify(effectiveAttributes));
     }
 
-
-
-
-
-
-
-
     const effectiveDescriptions = descriptions.filter(
       (desc) => desc.title.trim() || desc.content.trim()
     );
     formData.append("descriptions", JSON.stringify(effectiveDescriptions));
-
-
-
 
     // تصاویر جدید
     productImages.forEach((img) => formData.append("images", img));
@@ -428,7 +438,6 @@ const EditProductPage = () => {
       setLoading(false);
     }
   };
-  
 
   if (loading && !initialDataLoaded) {
     // فقط لودینگ اولیه صفحه
